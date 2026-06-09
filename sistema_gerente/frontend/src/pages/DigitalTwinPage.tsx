@@ -85,8 +85,8 @@ function scenarioConfig(scenario: any) {
 
 function riskTone(value: unknown) {
   const text = String(value || "").toLowerCase();
-  if (["critical", "crítico", "critico", "alto", "falha"].includes(text)) return "critical";
-  if (["warning", "atenção", "atencao", "médio", "medio", "restrição"].includes(text)) return "warning";
+  if (["critical", "crítico", "crítico", "alto", "falha"].includes(text)) return "critical";
+  if (["warning", "atenção", "atenção", "médio", "medio", "restrição"].includes(text)) return "warning";
   return "success";
 }
 

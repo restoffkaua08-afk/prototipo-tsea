@@ -212,7 +212,7 @@ const checklistPosText: Record<keyof Omit<ChecklistPos, "observacao">, { title: 
   },
   operadorConfirmouFisico: {
     title: "Conferencia física feita",
-    detail: "Operador confirmou maquina, tanque, mangueira e painel.",
+    detail: "Operador confirmou máquina, tanque, mangueira e painel.",
   },
   alarmesRevisados: {
     title: "Alarmes revisados",
@@ -261,17 +261,24 @@ function clampInteger(value: number, min: number, max: number) {
 }
 
 function humanStage(stage: string) {
+  const key = String(stage || "").toUpperCase();
+
   const map: Record<string, string> = {
     PREPARO: "PREPARO",
     VACUO_INICIAL: "VÁCUO INICIAL",
+    "VÁCUO_INICIAL": "VÁCUO INICIAL",
     VACUO_PROFUNDO: "VÁCUO PROFUNDO",
+    "VÁCUO_PROFUNDO": "VÁCUO PROFUNDO",
     INJECAO_DE_OLEO: "INJEÇÃO DE ÓLEO",
-    ESTABILIZAÇÃO: "ESTABILIZAÇÃO",
-    FINALIZAÇÃO: "FINALIZAÇÃO",
+    "INJEÇÃO_DE_ÓLEO": "INJEÇÃO DE ÓLEO",
+    ESTABILIZACAO: "ESTABILIZAÇÃO",
+    "ESTABILIZAÇÃO": "ESTABILIZAÇÃO",
+    FINALIZACAO: "FINALIZAÇÃO",
+    "FINALIZAÇÃO": "FINALIZAÇÃO",
     BLOQUEADO: "BLOQUEADO",
   };
 
-  return map[stage] || stage || "PREPARO";
+  return map[key] || key || "PREPARO";
 }
 
 function gatewayToRecipe(raw: any): Recipe {
@@ -453,15 +460,15 @@ function App() {
   const [realTanks, setRealTanks] = useState<any[]>([]);
   const [realLimits, setRealLimits] = useState<any>(null);
 
-  const recipes = gatewayRecipes;
+  const recipes = gatewayRecipes.length ? gatewayRecipes : [EMPTY_RECIPE];
   const recipe = recipes.find((r) => r.id === recipeId) || recipes[0] || EMPTY_RECIPE;
-  const hosesDisponiveis: Hose[] = realHoses.map((item: any) => ({
+  const hosesDisponíveis: Hose[] = realHoses.map((item: any) => ({
     id: String(item.id || item.code),
     descricao: `${item.label || item.descricao || item.code} · ${item.length_m ?? "--"} m · Ø ${item.internal_diameter_mm ?? "--"} mm · Vol. ${item.internal_volume_l ?? "--"} L`,
     perdaBase: Number(item.calibrated_loss_mbar ?? item.loss_base_mbar ?? 0),
     comprimento: Number(item.length_m ?? 0),
   }));
-  const hose = hosesDisponiveis.find((h) => h.id === hoseId) || hosesDisponiveis[0] || { id: "__SEM_MANGUEIRA__", descricao: "Nenhuma mangueira real cadastrada", perdaBase: 0, comprimento: 0 };
+  const hose = hosesDisponíveis.find((h) => h.id === hoseId) || hosesDisponíveis[0] || { id: "__SEM_MANGUEIRA__", descricao: "Nenhuma mangueira real cadastrada", perdaBase: 0, comprimento: 0 };
 
   const addLog = (msg: string) => setLogs((prev) => [{ time: now(), msg }, ...prev].slice(0, 60));
   async function gatewayPostJson(path: string, payload?: unknown) {
@@ -522,7 +529,7 @@ function App() {
   useEffect(() => {
     let active = true;
 
-    async function carregarParametrosReais() {
+    async function carregarParâmetrosReais() {
       try {
         const response = await fetch(`${GATEWAY_API}/real/parameters`);
         if (!response.ok) throw new Error(await response.text());
@@ -543,8 +550,8 @@ function App() {
       }
     }
 
-    carregarParametrosReais();
-    const timer = window.setInterval(carregarParametrosReais, 3000);
+    carregarParâmetrosReais();
+    const timer = window.setInterval(carregarParâmetrosReais, 3000);
 
     return () => {
       active = false;
@@ -637,12 +644,12 @@ function App() {
   const oilLigada = Boolean(gatewayState?.pumps?.oil) || (status === "EM CICLO" && elapsedLive >= recipe.oilStartSeg);
   const etapaAtual = humanStage(stageRaw || etapaLocal());
 
-  const pressãoMaquina = Number(
+  const pressãoMáquina = Number(
     gatewayState?.pressure_machine_mbar ??
       (status === "EM CICLO" ? Math.max(recipe.pressãoAlvo, 1013 * Math.exp(-elapsedLive / 4.8)) : 1013)
   );
 
-  const pressãoMedia = Number(gatewayState?.pressure_avg_tank_mbar ?? pressãoMaquina + hose.perdaBase);
+  const pressãoMedia = Number(gatewayState?.pressure_avg_tank_mbar ?? pressãoMáquina + hose.perdaBase);
   const oilInjetado = Number(gatewayState?.oil?.injected_l ?? Math.min(óleoColocado, oilLigada ? Math.max(0, elapsedLive - recipe.oilStartSeg) * 0.8 : 0));
   const oilRestante = Number(gatewayState?.oil?.remaining_l ?? Math.max(0, óleoColocado - oilInjetado));
   const oilFlow = Number(gatewayState?.oil?.flow_l_min ?? (oilLigada ? qtdTanques * 1.5 : 0));
@@ -691,7 +698,7 @@ function App() {
   // Para o protótipo físico, a IHM não deve bloquear o início apenas por não existir
   // cadastro individual de tanque no Gateway. A quantidade de tanques já é informada
   // na própria IHM. O bloqueio real de parâmetro obrigatório fica na receita e mangueira.
-  const parametrosReaisIncompletos = realHoses.length === 0;
+  const parâmetrosReaisIncompletos = realHoses.length === 0;
 
   const gatewayBloqueado = !gatewayOnline;
   const sensorBloqueado = gatewayState?.hardware?.sensor_online === false;
@@ -699,7 +706,7 @@ function App() {
 
   const motivosBloqueioInicio = [
     !recipes.length ? "Nenhuma receita cadastrada no Gateway." : "",
-    parametrosReaisIncompletos ? "Nenhuma mangueira real cadastrada no Gateway." : "",
+    parâmetrosReaisIncompletos ? "Nenhuma mangueira real cadastrada no Gateway." : "",
     gatewayBloqueado ? "Gateway offline." : "",
     sensorBloqueado ? "Sensor de pressão offline." : "",
     emergencyBloqueada ? "Emergência ou bloqueio crítico ativo." : "",
@@ -784,7 +791,7 @@ function App() {
     setPhase("alarmes");
   }
 
-  async function iniciarOperacao() {
+  async function iniciarOperação() {
     if (isStarting) return;
 
     setIsStarting(true);
@@ -800,7 +807,7 @@ function App() {
         throw new Error("Gateway offline. Abra o Gateway/API em http://127.0.0.1:8020/docs.");
       }
 
-      if (parametrosReaisIncompletos) {
+      if (parâmetrosReaisIncompletos) {
         throw new Error("Nenhuma mangueira real cadastrada no Gateway.");
       }
 
@@ -870,7 +877,7 @@ function App() {
     }
   }
 
-  async function finalizarOperacaoCompleta() {
+  async function finalizarOperaçãoCompleta() {
     try {
       await fetch(`${GATEWAY_API}/checklist/final`, {
         method: "POST",
@@ -1036,7 +1043,7 @@ function App() {
         <h2>DADOS DA OPERACAO</h2>
         <div className="form-grid">
           <div className="field"><label>Quantidade de tanques</label><input type="number" min={OPERATIONAL_LIMITS.tankMin} max={OPERATIONAL_LIMITS.tankMax} step={1} value={qtdTanques} onChange={(e) => setQtdTanques(clampInteger(Number(e.target.value), OPERATIONAL_LIMITS.tankMin, OPERATIONAL_LIMITS.tankMax))} /></div>
-          <div className="field"><label>Mangueira</label><select value={hoseId} onChange={(e) => setHoseId(e.target.value as HoseKey)}>{hosesDisponiveis.map((h) => <option key={h.id} value={h.id}>{h.descricao}</option>)}</select></div>
+          <div className="field"><label>Mangueira</label><select value={hoseId} onChange={(e) => setHoseId(e.target.value as HoseKey)}>{hosesDisponíveis.map((h) => <option key={h.id} value={h.id}>{h.descricao}</option>)}</select></div>
           <div className="field"><label>Óleo no reservatório (L)</label><input type="number" min={OPERATIONAL_LIMITS.oilMinL} max={OPERATIONAL_LIMITS.oilMaxL} step={OPERATIONAL_LIMITS.oilStepL} value={óleoColocado} onChange={(e) => setÓleoColocado(clampNumber(Number(e.target.value), OPERATIONAL_LIMITS.oilMinL, OPERATIONAL_LIMITS.oilMaxL))} /></div>
           <div className={oilInsuficiente || receitaExcedeLimiteÓleo ? "oil-warning limit-box" : "oil-ok limit-box"}>
             <b>Óleo necessário: {oilNeeded} L</b>
@@ -1091,7 +1098,7 @@ function App() {
           {receitaExcedeLimiteÓleo && <p className="warn-text">Receita exige mais óleo que o limite demonstrativo.</p>}
           {receitaExcedeLimiteÓleo && <p className="warn-text">Receita exige mais óleo que o limite operacional da IHM.</p>}
           {gatewayBloqueado && <p className="warn-text">Gateway offline. Início bloqueado ate normalizar a comunicação.</p>}
-          {parametrosReaisIncompletos && <p className="warn-text">Mangueira real não cadastrada. Cadastre no gerente.</p>}
+          {parâmetrosReaisIncompletos && <p className="warn-text">Mangueira real não cadastrada. Cadastre no gerente.</p>}
           {!allCheckedPre && <p className="warn-text">Checklist pré-operacional incompleto.</p>}
         </div>
 
@@ -1110,7 +1117,7 @@ function App() {
         )}
 <div className="button-row">
           <button className="cancel-btn standard-btn compact" onClick={() => setPhase("inicial")}>CANCELAR</button>
-          <button className="start-btn standard-btn compact" disabled={inícioBloqueado || isStarting} onClick={iniciarOperacao}>{isStarting ? "INICIANDO..." : "INICIAR"}</button>
+          <button className="start-btn standard-btn compact" disabled={inícioBloqueado || isStarting} onClick={iniciarOperação}>{isStarting ? "INICIANDO..." : "INICIAR"}</button>
         </div>
         {renderMenu()}
       </div>
@@ -1140,13 +1147,13 @@ function App() {
           {tab === "bombas" && (
             <div className="machines-layout machines-priority">
               <div className="pump-stack pump-stack-priority">
-                <PumpCard name="B1" subtitle="Bomba primaria" on={b1Ligada} detail="Evacuacao inicial do tanque e manutencao da linha de vácuo." />
+                <PumpCard name="B1" subtitle="Bomba primária" on={b1Ligada} detail="Evacuacao inicial do tanque e manutencao da linha de vácuo." />
                 <PumpCard name="B2" subtitle="Roots simulada" on={b2Ligada} detail="Reforco de vácuo acionado somente dentro da faixa permitida." />
                 <PumpCard name="OLEO" subtitle="Linha de injeção" on={oilLigada} detail="Entrada controlada de óleo conforme etapa da receita." />
               </div>
 
               <div className="machine-info-grid pump-info-compact">
-                <article><span>Pressão geral</span><b>{fmt(pressãoMaquina, "mbar")}</b><small>Antes da perda da linha</small></article>
+                <article><span>Pressão geral</span><b>{fmt(pressãoMáquina, "mbar")}</b><small>Antes da perda da linha</small></article>
                 <article><span>Pressão no regulador</span><b>{fmt(pressãoMedia, "mbar")}</b><small>Valor compensado no tanque</small></article>
                 <article><span>Gateway</span><b>{gatewayOnline ? "ONLINE" : "OFFLINE"}</b><small>Comunicacao com gerente</small></article>
                 <article><span>Seguranca</span><b>{alarmInfo?.severity === "red" ? "BLOQUEADO" : "LIBERADO"}</b><small>Intertravamento</small></article>
@@ -1240,7 +1247,7 @@ function App() {
           <p><b>Alarme:</b> {alarmInfo ? alarmInfo.title : "Sem alarme ativo"}</p>
           <p><b>Causa provÃ¡vel:</b> {alarmInfo ? alarmInfo.message : "Nenhuma condição crítica detectada."}</p>
           <p><b>AÃ§Ã£o recomendada:</b> {alarmInfo?.severity === "red" ? "Parar o ciclo, verificar bancada e reconhecer a falha." : alarmInfo ? "Verificar condição indicada e corrigir antes de iniciar." : "OperaÃ§Ã£o liberada."}</p>
-          <p><b>Pressão maquina:</b> {fmt(pressãoMaquina, "mbar")}</p>
+          <p><b>Pressão máquina:</b> {fmt(pressãoMáquina, "mbar")}</p>
           <p><b>Pressão media:</b> {fmt(pressãoMedia, "mbar")}</p>
           <p><b>Óleo colocado:</b> {óleoColocado} L</p>
           <p><b>Óleo necessário:</b> {oilNeeded} L</p>
@@ -1287,7 +1294,7 @@ function App() {
           </label>
         </div>
 
-        <button className="standard-btn compact" disabled={!allCheckedPos} onClick={finalizarOperacaoCompleta}>FINALIZAR</button>
+        <button className="standard-btn compact" disabled={!allCheckedPos} onClick={finalizarOperaçãoCompleta}>FINALIZAR</button>
         {renderMenu()}
       </div>
     );

@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "TQ-01",
+    "code": "TQ-01",
+    "name": "Tanque Prototipo",
+    "type": "Regulador",
+    "tank_type": "Regulador",
+    "volume_liters": 50,
+    "diameter_mm": 740,
+    "height_mm": 1000,
+    "wall_thickness_mm": 3.4,
+    "structural_limit_mbar": 35,
+    "status": "available",
+    "note": "Tanque base para demonstracao."
+  }
+]

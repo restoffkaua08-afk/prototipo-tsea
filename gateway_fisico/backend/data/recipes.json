@@ -1,18 +1,19 @@
 [
   {
     "id": "RC-01",
-    "title": "teste1",
-    "name": "teste1",
-    "tank_type": "grande",
+    "title": "Receita Padrao Prototipo",
+    "name": "Receita Padrao Prototipo",
+    "tank_type": "Regulador",
     "estimated_seconds": 180,
     "max_cycle_seconds": 180,
-    "target_pressure_mbar": 0.2,
-    "roots_start_pressure_mbar": 6.0,
-    "b2_start_seconds": 100,
-    "oil_start_seconds": 150,
+    "target_pressure_mbar": 8,
+    "roots_start_pressure_mbar": 50,
+    "b2_start_seconds": 24,
+    "oil_start_seconds": 90,
     "stabilization_seconds": 150,
-    "oil_per_tank_l": 100.0,
-    "note": ""
+    "oil_per_tank_l": 40,
+    "min_oil_flow_l_min": 1.5,
+    "note": "Receita base para demonstracao segura do prototipo fisico."
   },
   {
     "id": "RC-02",

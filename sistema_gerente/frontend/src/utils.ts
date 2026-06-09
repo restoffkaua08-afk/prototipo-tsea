@@ -32,8 +32,8 @@ export function statusLabel(status: unknown): string {
 export function tone(status: unknown): "good" | "warn" | "bad" | "neutral" {
   const value = String(status || "").toLowerCase();
   if (["success", "concluido", "ok", "running", "conforme"].includes(value)) return "good";
-  if (["warning", "paused", "em_andamento", "atencao", "atenção"].includes(value)) return "warn";
-  if (["critical", "abortado", "emergency", "critico", "crítico"].includes(value)) return "bad";
+  if (["warning", "paused", "em_andamento", "atenção", "atenção"].includes(value)) return "warn";
+  if (["critical", "abortado", "emergency", "crítico", "crítico"].includes(value)) return "bad";
   return "neutral";
 }
 

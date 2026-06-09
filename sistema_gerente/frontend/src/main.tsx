@@ -80,7 +80,7 @@ function tone(status: unknown) {
   const value = String(status || "").toLowerCase();
 
   if (["success", "concluido", "running", "ok", "operacional", "available"].includes(value)) return "ok";
-  if (["warning", "paused", "em_andamento", "atenção", "atencao", "attention"].includes(value)) return "warn";
+  if (["warning", "paused", "em_andamento", "atenção", "atenção", "attention"].includes(value)) return "warn";
   if (["critical", "abortado", "emergency", "falha", "fault"].includes(value)) return "bad";
 
   return "neutral";
@@ -512,9 +512,9 @@ function tseaBuildSimulationResult(config: any, state: any, hoses: any[], tanks:
   const selectedHose = hoses.find((hose: any) => String(hose.id) === String(config?.hose_id) || String(hose.code) === String(config?.hose_id)) || hoses[0] || {};
   const selectedTank = tanks.find((tank: any) => String(tank.id) === String(config?.tank_id) || String(tank.type) === String(config?.tank_type)) || tanks[0] || {};
 
-  const pressureTarget = Number(config?.target_pressure_mbar || config?.pressaoFinal || 6.5);
+  const pressureTarget = Number(config?.target_pressure_mbar || config?.pressãoFinal || 6.5);
   const secondaryStart = Number(config?.roots_start_pressure_mbar || config?.secondary_start_pressure_mbar || 50);
-  const oilFlow = Number(config?.oil_flow_l_min || config?.vazaoOleo || 2);
+  const oilFlow = Number(config?.oil_flow_l_min || config?.vazaoÓleo || 2);
   const oilDelay = Number(config?.oil_delay_seconds || 0);
   const pumpHealth = Number(config?.pump_health_factor || 1);
   const hoseLoss = Number(selectedHose?.loss_factor || 0.8);
@@ -1702,8 +1702,8 @@ function tseaHRStatusLabel(status: any) {
   const value = String(status || "").toLowerCase();
 
   if (["success", "concluido", "concluãÆ’Ã‚Â­do", "operacional", "ok"].includes(value)) return "Bem-sucedido";
-  if (["warning", "atenção", "atencao", "em_andamento"].includes(value)) return "Aprovado com restriãÆ’Ã‚Â§ãÆ’Ã‚Â£o";
-  if (["critical", "crítico", "critico", "abortado", "falha"].includes(value)) return "Reprovado / Crítico";
+  if (["warning", "atenção", "atenção", "em_andamento"].includes(value)) return "Aprovado com restriãÆ’Ã‚Â§ãÆ’Ã‚Â£o";
+  if (["critical", "crítico", "crítico", "abortado", "falha"].includes(value)) return "Reprovado / Crítico";
 
   return String(status || "Registrado");
 }
@@ -1928,7 +1928,7 @@ function tseaHRComponentRows(record: any, allTanks: any[], allHoses: any[]) {
   if (Array.isArray(record?.components) && record.components.length) {
     return record.components.map((item: any) => [
       item.type || item.tipo || "Componente",
-      item.id || item.codigo || item.identificacao || "--",
+      item.id || item.codigo || item.identificação || "--",
       item.status || "--",
       item.performance || item.desempenho || "--",
       item.reading || item.leitura || "--",
@@ -1939,7 +1939,7 @@ function tseaHRComponentRows(record: any, allTanks: any[], allHoses: any[]) {
   const config = record?.config || record || {};
   const tankCode = record?.tank || record?.tanque || config?.tank_type || config?.tanque || allTanks?.[0]?.code || "--";
   const hoseCode = record?.hose || record?.mangueira || config?.hose_id || config?.mangueira || allHoses?.[0]?.code || "--";
-  const pressure = record?.pressure || record?.pressaoFinal || record?.metrics?.final_real_pressure_mbar || config?.target_pressure_mbar || config?.pressaoFinal || "--";
+  const pressure = record?.pressure || record?.pressãoFinal || record?.metrics?.final_real_pressure_mbar || config?.target_pressure_mbar || config?.pressãoFinal || "--";
 
   return [
     ["Bomba primãÆ’Ã‚Â¡ria", "Leybold SOGEVAC SV 630 B", "Operacional", "98%", "640 mãâ€šÃ‚Â³/h", "EvacuaãÆ’Ã‚Â§ãÆ’Ã‚Â£o inicial e sustentaãÆ’Ã‚Â§ãÆ’Ã‚Â£o do vãÆ’Ã‚Â¡cuo."],
@@ -1947,7 +1947,7 @@ function tseaHRComponentRows(record: any, allTanks: any[], allHoses: any[]) {
     ["Mangueira de vãÆ’Ã‚Â¡cuo", hoseCode, "Operacional", "Conforme fator de perda", String(config?.hose_loss_factor || config?.loss_factor || record?.metrics?.hose_loss_factor || "--"), "Perda de carga e ligaãÆ’Ã‚Â§ãÆ’Ã‚Â£o entre bomba/tanque."],
     ["Tanque de processo", tankCode, tseaHRStatusLabel(record?.status), "--", tseaHRNumber(pressure, "mbar"), "Volume, pressãÆ’Ã‚Â£o e margem estrutural."],
     ["Sensor de pressãÆ’Ã‚Â£o", `SP-${tankCode}`, config?.simulate_sensor_failure ? "Falha simulada" : "Online", config?.simulate_sensor_failure ? "35%" : "98%", tseaHRNumber(pressure, "mbar"), "Leitura (unidade do sensor) usada no controle e rastreabilidade."],
-    ["Sistema de ãÆ’Ã‚Â³leo", "InjeãÆ’Ã‚Â§ãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo", Number(config?.oil_flow_l_min || config?.vazaoOleo || 2) < 1.5 ? "VazãÆ’Ã‚Â£o baixa" : "Operacional", "--", tseaHRNumber(config?.oil_flow_l_min || config?.vazaoOleo || record?.metrics?.oil_flow_l_min || 2, "L/min"), "VedaãÆ’Ã‚Â§ãÆ’Ã‚Â£o, estabilidade e proteãÆ’Ã‚Â§ãÆ’Ã‚Â£o do conjunto."]
+    ["Sistema de ãÆ’Ã‚Â³leo", "InjeãÆ’Ã‚Â§ãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo", Number(config?.oil_flow_l_min || config?.vazaoÓleo || 2) < 1.5 ? "VazãÆ’Ã‚Â£o baixa" : "Operacional", "--", tseaHRNumber(config?.oil_flow_l_min || config?.vazaoÓleo || record?.metrics?.oil_flow_l_min || 2, "L/min"), "VedaãÆ’Ã‚Â§ãÆ’Ã‚Â£o, estabilidade e proteãÆ’Ã‚Â§ãÆ’Ã‚Â£o do conjunto."]
   ];
 }
 
@@ -1984,12 +1984,12 @@ function tseaHRInfoRows(record: any) {
     ["Lote / ordem", record?.lot || record?.lote || config?.lot || "--"],
     ["Tanque", record?.tank || record?.tanque || config?.tank_type || "--"],
     ["Mangueira", record?.hose || record?.mangueira || config?.hose_id || "--"],
-    ["PressãÆ’Ã‚Â£o final (mbar)", tseaHRNumber(record?.pressure || record?.pressaoFinal || record?.metrics?.final_real_pressure_mbar || config?.target_pressure_mbar || config?.pressaoFinal, "mbar")],
+    ["PressãÆ’Ã‚Â£o final (mbar)", tseaHRNumber(record?.pressure || record?.pressãoFinal || record?.metrics?.final_real_pressure_mbar || config?.target_pressure_mbar || config?.pressãoFinal, "mbar")],
     ["Tempo estimado (s)", tseaHRNumber(record?.duration || record?.metrics?.estimated_time_seconds || config?.max_cycle_seconds, "s")],
     ["Risco mãÆ’Ã‚Â¡ximo (%)", tseaHRNumber(record?.metrics?.max_collapse_risk_pct || record?.metrics?.risco, "%")],
-    ["VazãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo (L/min)", tseaHRNumber(config?.oil_flow_l_min || config?.vazaoOleo || record?.metrics?.oil_flow_l_min, "L/min")],
+    ["VazãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo (L/min)", tseaHRNumber(config?.oil_flow_l_min || config?.vazaoÓleo || record?.metrics?.oil_flow_l_min, "L/min")],
     ["Status", tseaHRStatusLabel(record?.status)],
-    ["DiagnãÆ’Ã‚Â³stico", record?.diagnosis || record?.diagnostico || "--"],
+    ["DiagnãÆ’Ã‚Â³stico", record?.diagnosis || record?.diagnóstico || "--"],
     ["RecomendaãÆ’Ã‚Â§ãÆ’Ã‚Â£o", record?.recommendation || record?.recomendacao || "--"]
   ];
 }
@@ -2071,7 +2071,7 @@ function tseaHRBuildWordGeneral(operations: any[], simulations: any[]) {
     sim.scenario || sim.nome || "--",
     tseaHRStatusLabel(sim.status),
     tseaHRNumber(sim.metrics?.max_collapse_risk_pct || sim.metrics?.risco, "%"),
-    tseaHRNumber(sim.metrics?.final_real_pressure_mbar || sim.metrics?.pressaoFinal, "mbar")
+    tseaHRNumber(sim.metrics?.final_real_pressure_mbar || sim.metrics?.pressãoFinal, "mbar")
   ]);
 
   return `
@@ -2133,7 +2133,7 @@ function TseaRecordDetail({ record, kind, allTanks, allHoses, onClose }: any) {
 
   function exportWord() {
     const html = tseaHRBuildWordRecord(record, kind, allTanks, allHoses);
-    const prefix = kind === "simulation" ? "Relatorio_Simulacao" : "Relatorio_Operacao";
+    const prefix = kind === "simulation" ? "Relatório_Simulação" : "Relatório_Operação";
     tseaHRDownloadWord(`${prefix}_${record?.id || "TSEA"}.doc`, html);
   }
 
@@ -2143,7 +2143,7 @@ function TseaRecordDetail({ record, kind, allTanks, allHoses, onClose }: any) {
         <div>
           <span>{kind === "simulation" ? "SimulaãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "OperaãÆ’Ã‚Â§ãÆ’Ã‚Â£o"}</span>
           <h3>{record?.scenario || record?.nome || record?.id || "Registro tãÆ’Ã‚Â©cnico"}</h3>
-          <p>{record?.diagnosis || record?.diagnostico || "Detalhamento tãÆ’Ã‚Â©cnico do registro selecionado."}</p>
+          <p>{record?.diagnosis || record?.diagnóstico || "Detalhamento tãÆ’Ã‚Â©cnico do registro selecionado."}</p>
         </div>
 
         <div className="hrActions">
@@ -2154,7 +2154,7 @@ function TseaRecordDetail({ record, kind, allTanks, allHoses, onClose }: any) {
 
       <div className="metrics">
         <Metric label="Status" value={<Badge value={tseaHRStatusBadge(record?.status)} />} detail={tseaHRStatusLabel(record?.status)} />
-        <Metric label="PressãÆ’Ã‚Â£o final (mbar)" value={tseaHRNumber(record?.pressure || record?.pressaoFinal || record?.metrics?.final_real_pressure_mbar || record?.config?.target_pressure_mbar, "mbar")} detail="Valor registrado/calculado" />
+        <Metric label="PressãÆ’Ã‚Â£o final (mbar)" value={tseaHRNumber(record?.pressure || record?.pressãoFinal || record?.metrics?.final_real_pressure_mbar || record?.config?.target_pressure_mbar, "mbar")} detail="Valor registrado/calculado" />
         <Metric label="Tempo" value={tseaHRNumber(record?.duration || record?.metrics?.estimated_time_seconds || record?.config?.max_cycle_seconds, "s")} detail="DuraãÆ’Ã‚Â§ãÆ’Ã‚Â£o (s) ou estimativa" />
         <Metric label="Risco" value={tseaHRNumber(record?.metrics?.max_collapse_risk_pct || record?.metrics?.risco, "%")} detail="AvaliaãÆ’Ã‚Â§ãÆ’Ã‚Â£o tãÆ’Ã‚Â©cnica" />
       </div>
@@ -2240,7 +2240,7 @@ function TseaHistoryMenuV2({ operations = [], state, allTanks = [], allHoses = [
               sim.scenario || sim.nome || "--",
               <Badge value={tseaHRStatusBadge(sim.status)} />,
               tseaHRNumber(sim.metrics?.max_collapse_risk_pct || sim.metrics?.risco, "%"),
-              tseaHRNumber(sim.metrics?.final_real_pressure_mbar || sim.metrics?.pressaoFinal, "mbar"),
+              tseaHRNumber(sim.metrics?.final_real_pressure_mbar || sim.metrics?.pressãoFinal, "mbar"),
               <button className="secondary" onClick={() => openDetail(sim, "simulation")}>Ver detalhes</button>
             ])}
           />
@@ -2310,22 +2310,22 @@ function TseaReportsMenuV2({ operations = [], state, allTanks = [], allHoses = [
 
   function exportGeneral() {
     const html = tseaHRBuildWordGeneral(filteredOperations, filteredSimulations);
-    tseaHRDownloadWord("Relatorio_Geral_TSEA_Supervisorio_Digital.doc", html);
+    tseaHRDownloadWord("Relatório_Geral_TSEA_Supervisorio_Digital.doc", html);
   }
 
   function exportOperations() {
     const html = tseaHRBuildWordGeneral(filteredOperations, []);
-    tseaHRDownloadWord("Relatorio_Operacoes_TSEA.doc", html);
+    tseaHRDownloadWord("Relatório_Operacoes_TSEA.doc", html);
   }
 
   function exportSimulations() {
     const html = tseaHRBuildWordGeneral([], filteredSimulations);
-    tseaHRDownloadWord("Relatorio_Simulacoes_Gemeo_Digital_TSEA.doc", html);
+    tseaHRDownloadWord("Relatório_Simulacoes_Gemeo_Digital_TSEA.doc", html);
   }
 
   function exportSpecific(record: any, kind: "operation" | "simulation") {
     const html = tseaHRBuildWordRecord(record, kind, allTanks, allHoses);
-    const name = kind === "simulation" ? "Relatorio_Simulacao" : "Relatorio_Operacao";
+    const name = kind === "simulation" ? "Relatório_Simulação" : "Relatório_Operação";
     tseaHRDownloadWord(`${name}_${record?.id || "TSEA"}.doc`, html);
   }
 
@@ -2413,7 +2413,7 @@ function TseaReportsMenuV2({ operations = [], state, allTanks = [], allHoses = [
               sim.scenario || sim.nome || "--",
               <Badge value={tseaHRStatusBadge(sim.status)} />,
               tseaHRNumber(sim.metrics?.max_collapse_risk_pct || sim.metrics?.risco, "%"),
-              tseaHRNumber(sim.metrics?.final_real_pressure_mbar || sim.metrics?.pressaoFinal, "mbar"),
+              tseaHRNumber(sim.metrics?.final_real_pressure_mbar || sim.metrics?.pressãoFinal, "mbar"),
               <div className="hrActions inline">
                 <button className="secondary" onClick={() => openDetail(sim, "simulation")}>Ver detalhes</button>
                 <button onClick={() => exportSpecific(sim, "simulation")}>Salvar Word</button>
@@ -2778,7 +2778,7 @@ function App() {
 
     let answer = `Estado atual: ${status}. Risco mãÆ’Ã‚Â¡ximo (%): ${fmt(risk, "%")}. PressãÆ’Ã‚Â£o final (mbar): ${fmt(pressure, "mbar")}.`;
 
-    if (q.includes("ãÆ’Ã‚Â³leo") || q.includes("oleo")) {
+    if (q.includes("ãÆ’Ã‚Â³leo") || q.includes("óleo")) {
       answer += " Verifique vazãÆ’Ã‚Â£o de injeãÆ’Ã‚Â§ãÆ’Ã‚Â£o, atraso de entrada e compensaãÆ’Ã‚Â§ãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo. Baixa vazãÆ’Ã‚Â£o ou atraso elevam a carga estrutural.";
     } else if (q.includes("mangueira") || q.includes("mangueira")) {
       answer += " Verifique comprimento, diãÆ’Ã‚Â¢metro e fator de perda da mangueira de vãÆ’Ã‚Â¡cuo. Perda elevada altera a curva esperada.";

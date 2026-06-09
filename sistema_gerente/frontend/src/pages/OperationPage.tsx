@@ -55,7 +55,7 @@ function riskStatus(risk: number) {
 function signalLabel(value: unknown) {
   const signal = String(value || "").toLowerCase();
   if (["green", "success", "ok", "operacional"].includes(signal)) return "Operacional";
-  if (["yellow", "warning", "attention", "atenção", "atencao"].includes(signal)) return "Atenção";
+  if (["yellow", "warning", "attention", "atenção", "atenção"].includes(signal)) return "Atenção";
   if (["red", "critical", "emergency", "falha"].includes(signal)) return "Crítico";
   return String(value || "--");
 }
@@ -63,7 +63,7 @@ function signalLabel(value: unknown) {
 function signalTone(value: unknown) {
   const signal = String(value || "").toLowerCase();
   if (["green", "success", "ok", "operacional"].includes(signal)) return "ok";
-  if (["yellow", "warning", "attention", "atenção", "atencao"].includes(signal)) return "warn";
+  if (["yellow", "warning", "attention", "atenção", "atenção"].includes(signal)) return "warn";
   if (["red", "critical", "emergency", "falha"].includes(signal)) return "bad";
   return "neutral";
 }

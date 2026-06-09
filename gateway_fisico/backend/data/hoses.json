@@ -2,15 +2,14 @@
   {
     "id": "MG-01",
     "code": "MG-01",
-    "label": "padrao 01",
-    "descricao": "padrao 01",
-    "length_m": 10.0,
-    "internal_diameter_mm": 5.0,
-    "internal_volume_l": 0.19635,
+    "label": "Mangueira Prototipo 8 m",
+    "descricao": "Mangueira de vacuo do prototipo",
+    "length_m": 8,
+    "internal_diameter_mm": 10,
     "calibrated_loss_mbar": 1.2,
     "loss_base_mbar": 1.2,
     "status": "available",
-    "note": "Perda calibrada deve ser ajustada depois do ensaio real."
+    "note": "Mangueira base para demonstracao."
   },
   {
     "id": "MG-02",

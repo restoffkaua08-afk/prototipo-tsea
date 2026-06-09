@@ -31,7 +31,7 @@ export function tone(status: unknown) {
   const value = String(status || "").toLowerCase();
 
   if (["success", "concluido", "running", "ok", "operacional", "available"].includes(value)) return "ok";
-  if (["warning", "paused", "em_andamento", "atenção", "atencao", "attention"].includes(value)) return "warn";
+  if (["warning", "paused", "em_andamento", "atenção", "atenção", "attention"].includes(value)) return "warn";
   if (["critical", "abortado", "emergency", "falha", "fault"].includes(value)) return "bad";
 
   return "neutral";
