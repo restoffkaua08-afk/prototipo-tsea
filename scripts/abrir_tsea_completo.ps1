@@ -18,46 +18,15 @@ function Stop-Port {
         }
 }
 
-if (!(Test-Path $Backend)) {
-    throw "Backend não encontrado: $Backend"
-}
-
-if (!(Test-Path $Ihm)) {
-    throw "IHM não encontrada: $Ihm"
-}
-
-if (!(Test-Path $Gerente)) {
-    throw "Sistema gerente não encontrado: $Gerente"
-}
+if (!(Test-Path $Backend)) { throw "Backend não encontrado: $Backend" }
+if (!(Test-Path $Ihm)) { throw "IHM não encontrada: $Ihm" }
+if (!(Test-Path $Gerente)) { throw "Sistema gerente não encontrado: $Gerente" }
+if (!(Test-Path $PythonVenv)) { throw "Ambiente virtual não encontrado: $PythonVenv" }
 
 Write-Host "Parando portas antigas..." -ForegroundColor Cyan
 Stop-Port 8020
 Stop-Port 5178
 Stop-Port 5173
-
-Write-Host "Preparando Gateway/API..." -ForegroundColor Cyan
-cd $Backend
-
-if (!(Test-Path $PythonVenv)) {
-    python -m venv ".venv_gateway"
-}
-
-& $PythonVenv -m pip install --upgrade pip
-& $PythonVenv -m pip install -r requirements.txt
-
-& $PythonVenv -m py_compile ".\app\main.py"
-
-if (Test-Path ".\app\real_bridge.py") {
-    & $PythonVenv -m py_compile ".\app\real_bridge.py"
-}
-
-if (Test-Path ".\app\charts_bridge.py") {
-    & $PythonVenv -m py_compile ".\app\charts_bridge.py"
-}
-
-if (Test-Path ".\app\google_sheets_bridge.py") {
-    & $PythonVenv -m py_compile ".\app\google_sheets_bridge.py"
-}
 
 Write-Host "Abrindo Gateway/API na porta 8020..." -ForegroundColor Cyan
 
@@ -69,16 +38,14 @@ Start-Process powershell.exe -ArgumentList @(
     "cd `"$Backend`"; `"$PythonVenv`" -m uvicorn app.main:app --host 127.0.0.1 --port 8020 --reload"
 )
 
-Start-Sleep -Seconds 8
+Start-Sleep -Seconds 10
 
 Write-Host "Testando Gateway/API..." -ForegroundColor Cyan
 Invoke-WebRequest "http://127.0.0.1:8020/api/state" -UseBasicParsing | Out-Null
 
-Write-Host "Preparando IHM..." -ForegroundColor Cyan
+Write-Host "Abrindo IHM na porta 5178..." -ForegroundColor Cyan
 cd $Ihm
 npm install
-
-Write-Host "Abrindo IHM na porta 5178..." -ForegroundColor Cyan
 
 Start-Process powershell.exe -ArgumentList @(
     "-NoExit",
@@ -88,16 +55,14 @@ Start-Process powershell.exe -ArgumentList @(
     "cd `"$Ihm`"; npm run dev -- --host 127.0.0.1 --port 5178"
 )
 
-Start-Sleep -Seconds 7
+Start-Sleep -Seconds 8
 
 Write-Host "Testando IHM..." -ForegroundColor Cyan
 Invoke-WebRequest "http://127.0.0.1:5178" -UseBasicParsing | Out-Null
 
-Write-Host "Preparando Sistema Gerente..." -ForegroundColor Cyan
+Write-Host "Abrindo Sistema Gerente na porta 5173..." -ForegroundColor Cyan
 cd $Gerente
 npm install
-
-Write-Host "Abrindo Sistema Gerente na porta 5173..." -ForegroundColor Cyan
 
 Start-Process powershell.exe -ArgumentList @(
     "-NoExit",
@@ -107,7 +72,7 @@ Start-Process powershell.exe -ArgumentList @(
     "cd `"$Gerente`"; npm run dev -- --host 127.0.0.1 --port 5173"
 )
 
-Start-Sleep -Seconds 7
+Start-Sleep -Seconds 8
 
 Write-Host "Testando Sistema Gerente..." -ForegroundColor Cyan
 Invoke-WebRequest "http://127.0.0.1:5173" -UseBasicParsing | Out-Null
