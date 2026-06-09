@@ -1,3 +1,4 @@
+import { HardwareBridgePanel } from "./HardwareBridgePanel";
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { AppShell, type View } from "./components/AppShell";
@@ -2977,3 +2978,6 @@ function App() {
 createRoot(document.getElementById("root") as HTMLElement).render(<App />);
 
 
+const tseaHardwarePanelRoot_gerente = document.createElement("div");
+document.body.appendChild(tseaHardwarePanelRoot_gerente);
+createRoot(tseaHardwarePanelRoot_gerente).render(<HardwareBridgePanel variant="gerente" />);

@@ -1,3 +1,4 @@
+import { HardwareBridgePanel } from "./HardwareBridgePanel";
 import { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
@@ -1304,3 +1305,8 @@ function App() {
 }
 
 createRoot(document.getElementById("root")!).render(<App />);
+
+
+const tseaHardwarePanelRoot_ihm = document.createElement("div");
+document.body.appendChild(tseaHardwarePanelRoot_ihm);
+createRoot(tseaHardwarePanelRoot_ihm).render(<HardwareBridgePanel variant="ihm" />);

@@ -44,7 +44,7 @@ body {
 .inicial,
 .preparo,
 .registros-dia,
-.operacao,
+.operação,
 .finalizacao {
   width: min(1360px, calc(100vw - 24px));
   height: min(805px, calc(100vh - 24px));
@@ -86,7 +86,7 @@ body {
 .inicial::before,
 .preparo::before,
 .registros-dia::before,
-.operacao::before,
+.operação::before,
 .finalizacao::before {
   content: "";
   position: absolute;
@@ -113,7 +113,7 @@ body {
 .inicial > :not(.drawer),
 .preparo > :not(.drawer),
 .registros-dia > :not(.drawer),
-.operacao > :not(.drawer),
+.operação > :not(.drawer),
 .finalizacao > :not(.drawer) {
   position: relative;
   z-index: 2;
@@ -123,7 +123,7 @@ body {
 .inicial::after,
 .preparo::after,
 .registros-dia::after,
-.operacao::after,
+.operação::after,
 .finalizacao::after {
   display: none;
 }
@@ -427,7 +427,7 @@ button:disabled {
    OPERACAO - melhor aproveitamento da tela interna
 ========================================================= */
 
-.operacao {
+.operação {
   display: grid;
   grid-template-rows: 58px minmax(0, 1fr) 66px;
   gap: 8px;
@@ -615,7 +615,7 @@ button:disabled {
    ABA OLEO
 ========================================================= */
 
-.oleo-grid {
+.óleo-grid {
   height: 100%;
   min-height: 0;
   display: grid;
@@ -625,7 +625,7 @@ button:disabled {
   overflow: hidden;
 }
 
-.oleo-grid > div {
+.óleo-grid > div {
   background: var(--panel);
   border: 5px solid #111;
   border-radius: 0;
@@ -638,14 +638,14 @@ button:disabled {
   overflow: hidden;
 }
 
-.oleo-grid > div:nth-child(1) {
+.óleo-grid > div:nth-child(1) {
   grid-row: span 3;
   font-size: 1.12rem;
   position: relative;
   padding-top: 132px;
 }
 
-.oleo-grid > div:nth-child(1)::before {
+.óleo-grid > div:nth-child(1)::before {
   content: "";
   position: absolute;
   top: 14px;
@@ -804,7 +804,7 @@ button:disabled {
   .inicial,
   .preparo,
   .registros-dia,
-  .operacao,
+  .operação,
   .finalizacao {
     transform: scale(0.9);
     transform-origin: top center;
@@ -817,7 +817,7 @@ button:disabled {
   .inicial,
   .preparo,
   .registros-dia,
-  .operacao,
+  .operação,
   .finalizacao {
     transform: scale(0.82);
   }
@@ -2053,7 +2053,7 @@ button:disabled {
   line-height: 1.1 !important;
 }
 
-/* Alarme: fica dentro da tela interna, nao distorce o tablet */
+/* Alarme: fica dentro da tela interna, não distorce o tablet */
 .alarm-overlay {
   position: absolute !important;
   left: 154px !important;
@@ -2192,14 +2192,14 @@ button:disabled {
 /* =========================================================
    PATCH AUMENTA TABLET IHM
    Apenas aumenta o tablet e a tela interna.
-   Nao altera logica, bloqueios, Gateway ou rastreabilidade.
+   Não altera logica, bloqueios, Gateway ou rastreabilidade.
 ========================================================= */
 
 .boot,
 .inicial,
 .preparo,
 .registros-dia,
-.operacao,
+.operação,
 .finalizacao,
 .screen,
 .boot-screen {
@@ -2220,7 +2220,7 @@ button:disabled {
 .inicial::before,
 .preparo::before,
 .registros-dia::before,
-.operacao::before,
+.operação::before,
 .finalizacao::before,
 .screen::before,
 .boot-screen::before {
@@ -2235,7 +2235,7 @@ button:disabled {
 .inicial,
 .preparo,
 .registros-dia,
-.operacao,
+.operação,
 .finalizacao,
 .screen,
 .boot-screen {
@@ -2253,8 +2253,8 @@ button:disabled {
     linear-gradient(145deg, #fafbf6 0%, #e3e7e0 48%, #cad1cb 100%) !important;
 }
 
-/* Garante que a operacao usa melhor o espaco interno */
-.operacao {
+/* Garante que a operação usa melhor o espaco interno */
+.operação {
   grid-template-rows: 64px minmax(0, 1fr) 68px !important;
   gap: 10px !important;
 }
@@ -2294,7 +2294,7 @@ button:disabled {
   .inicial,
   .preparo,
   .registros-dia,
-  .operacao,
+  .operação,
   .finalizacao,
   .screen,
   .boot-screen {
@@ -2308,7 +2308,7 @@ button:disabled {
   .inicial,
   .preparo,
   .registros-dia,
-  .operacao,
+  .operação,
   .finalizacao,
   .screen,
   .boot-screen {
@@ -2320,7 +2320,7 @@ button:disabled {
 /* =========================================================
    PATCH TABLET PADRAO 16 10 IHM
    Ajusta o tablet para proporcao horizontal de tablet.
-   Apenas CSS. Nao altera logica, Gateway ou rastreabilidade.
+   Apenas CSS. Não altera logica, Gateway ou rastreabilidade.
 ========================================================= */
 
 html,
@@ -2350,7 +2350,7 @@ body {
 .inicial,
 .preparo,
 .registros-dia,
-.operacao,
+.operação,
 .finalizacao,
 .screen,
 .boot-screen {
@@ -2376,7 +2376,7 @@ body {
   .inicial,
   .preparo,
   .registros-dia,
-  .operacao,
+  .operação,
   .finalizacao,
   .screen,
   .boot-screen {
@@ -2390,7 +2390,7 @@ body {
 .inicial::before,
 .preparo::before,
 .registros-dia::before,
-.operacao::before,
+.operação::before,
 .finalizacao::before,
 .screen::before,
 .boot-screen::before {
@@ -2405,7 +2405,7 @@ body {
 .inicial,
 .preparo,
 .registros-dia,
-.operacao,
+.operação,
 .finalizacao,
 .screen,
 .boot-screen {
@@ -2424,7 +2424,7 @@ body {
 }
 
 /* Conteúdo interno acompanha a altura maior */
-.operacao {
+.operação {
   grid-template-rows: 68px minmax(0, 1fr) 72px !important;
   gap: 10px !important;
 }
@@ -2477,7 +2477,7 @@ body {
   .inicial,
   .preparo,
   .registros-dia,
-  .operacao,
+  .operação,
   .finalizacao,
   .screen,
   .boot-screen {
@@ -2493,7 +2493,7 @@ body {
    - aumenta tablet de verdade
    - remove card isolado do reservatorio
    - prioriza bombas
-   - nao altera logica, checklist, Gateway ou rastreabilidade
+   - não altera logica, checklist, Gateway ou rastreabilidade
 ========================================================= */
 
 /* Aumenta largura E altura sem forcar proporcao que reduza o tablet */
@@ -2501,7 +2501,7 @@ body {
 .inicial,
 .preparo,
 .registros-dia,
-.operacao,
+.operação,
 .finalizacao,
 .screen,
 .boot-screen {
@@ -2521,7 +2521,7 @@ body {
 .inicial::before,
 .preparo::before,
 .registros-dia::before,
-.operacao::before,
+.operação::before,
 .finalizacao::before,
 .screen::before,
 .boot-screen::before {
@@ -2537,7 +2537,7 @@ body {
   .inicial,
   .preparo,
   .registros-dia,
-  .operacao,
+  .operação,
   .finalizacao,
   .screen,
   .boot-screen {
@@ -2545,8 +2545,8 @@ body {
   }
 }
 
-/* Operacao aproveita melhor a nova altura */
-.operacao {
+/* Operação aproveita melhor a nova altura */
+.operação {
   grid-template-rows: 62px minmax(0, 1fr) 66px !important;
   gap: 8px !important;
 }
@@ -2785,14 +2785,14 @@ body {
 }
 
 /* Corrige de vez o botão MENU dentro da barra superior */
-.operacao .topbar {
+.operação .topbar {
   grid-template-columns: minmax(84px, 98px) repeat(4, minmax(0, 1fr)) !important;
   align-items: stretch !important;
   overflow: hidden !important;
 }
 
-.operacao .topbar > div,
-.operacao .topbar > button {
+.operação .topbar > div,
+.operação .topbar > button {
   min-width: 0 !important;
   height: 100% !important;
 }
@@ -2885,7 +2885,7 @@ body {
   font-weight: 950 !important;
 }
 
-.operacao .topbar {
+.operação .topbar {
   grid-template-columns: minmax(84px, 98px) repeat(4, minmax(0, 1fr)) !important;
   align-items: stretch !important;
   overflow: hidden !important;
@@ -2997,3 +2997,200 @@ body {
   font-weight: 950 !important;
 }
 
+
+
+.hardwareDock {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+  font-family: inherit;
+}
+
+.hardwareDockButton {
+  min-width: 118px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 16px;
+  padding: 10px 14px;
+  background: rgba(15, 23, 42, .92);
+  color: #fff;
+  box-shadow: 0 18px 45px rgba(0,0,0,.35);
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+}
+
+.hardwareDockButton span {
+  font-size: 11px;
+  opacity: .72;
+  letter-spacing: .08em;
+}
+
+.hardwareDockButton strong {
+  font-size: 13px;
+}
+
+.hardwareDockButton.ok {
+  border-color: rgba(34,197,94,.55);
+}
+
+.hardwareDockButton.warn {
+  border-color: rgba(245,158,11,.65);
+}
+
+.hardwareDockButton.bad {
+  border-color: rgba(239,68,68,.75);
+}
+
+.hardwarePanel {
+  width: min(520px, calc(100vw - 32px));
+  max-height: min(720px, calc(100vh - 96px));
+  overflow: auto;
+  margin-bottom: 10px;
+  border: 1px solid rgba(148,163,184,.25);
+  border-radius: 22px;
+  padding: 16px;
+  background: rgba(15, 23, 42, .97);
+  color: #e5e7eb;
+  box-shadow: 0 26px 80px rgba(0,0,0,.48);
+  backdrop-filter: blur(18px);
+}
+
+.hardwarePanelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.hardwarePanelHeader span {
+  color: #93c5fd;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.hardwarePanelHeader h3 {
+  margin: 3px 0 0;
+  font-size: 18px;
+}
+
+.hardwareClose {
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 10px;
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.hardwareError {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  background: rgba(239,68,68,.16);
+  border: 1px solid rgba(239,68,68,.38);
+}
+
+.hardwareError span {
+  font-size: 12px;
+  color: #fecaca;
+}
+
+.hardwareGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+}
+
+.hardwareGrid article {
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  padding: 10px;
+  background: rgba(255,255,255,.05);
+}
+
+.hardwareGrid article.ok {
+  border-color: rgba(34,197,94,.38);
+}
+
+.hardwareGrid article.warn {
+  border-color: rgba(245,158,11,.5);
+}
+
+.hardwareGrid article.bad {
+  border-color: rgba(239,68,68,.5);
+}
+
+.hardwareGrid span,
+.hardwareOutputs span {
+  display: block;
+  color: #94a3b8;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.hardwareGrid strong,
+.hardwareOutputs b {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #f8fafc;
+}
+
+.hardwareOutputs {
+  margin-top: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(255,255,255,.04);
+}
+
+.hardwareOutputs h4 {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.hardwareOutputs > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 14px;
+  align-items: center;
+}
+
+.hardwareActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.hardwareActions button {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hardwareActions button.danger {
+  background: #dc2626;
+}
+
+.hardwareActions button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.hardwareNote {
+  margin: 12px 0 0;
+  color: #cbd5e1;
+  font-size: 12px;
+  line-height: 1.45;
+}
