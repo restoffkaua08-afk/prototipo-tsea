@@ -1,0 +1,32 @@
+[
+  {
+    "id": "RC-01",
+    "title": "teste1",
+    "name": "teste1",
+    "tank_type": "grande",
+    "estimated_seconds": 180,
+    "max_cycle_seconds": 180,
+    "target_pressure_mbar": 0.2,
+    "roots_start_pressure_mbar": 6.0,
+    "b2_start_seconds": 100,
+    "oil_start_seconds": 150,
+    "stabilization_seconds": 150,
+    "oil_per_tank_l": 100.0,
+    "note": ""
+  },
+  {
+    "id": "RC-02",
+    "title": "teste2",
+    "name": "teste2",
+    "tank_type": "medio",
+    "estimated_seconds": 120,
+    "max_cycle_seconds": 120,
+    "target_pressure_mbar": 0.2,
+    "roots_start_pressure_mbar": 0.6,
+    "b2_start_seconds": 60,
+    "oil_start_seconds": 100,
+    "stabilization_seconds": 110,
+    "oil_per_tank_l": 60.0,
+    "note": ""
+  }
+]
