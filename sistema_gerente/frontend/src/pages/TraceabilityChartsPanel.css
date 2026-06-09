@@ -368,3 +368,42 @@
     grid-template-columns: 1fr;
   }
 }
+.tc-bar {
+  fill: rgba(56, 189, 248, 0.82);
+  stroke: rgba(14, 165, 233, 0.95);
+  stroke-width: 1;
+}
+
+.tc-pie-svg {
+  min-height: 360px;
+}
+
+.tc-pie-slice {
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 2;
+}
+
+.tc-pie-dot {
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 1;
+}
+
+.slice-0 { fill: #1f77b4; }
+.slice-1 { fill: #ff7f0e; }
+.slice-2 { fill: #2ca02c; }
+.slice-3 { fill: #d62728; }
+.slice-4 { fill: #9467bd; }
+.slice-5 { fill: #8c564b; }
+.slice-6 { fill: #e377c2; }
+.slice-7 { fill: #7f7f7f; }
+
+.tc-doughnut-hole {
+  fill: var(--panel, #0f172a);
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-width: 1;
+}
+
+.tc-pie-legend text {
+  fill: currentColor;
+  font-size: 13px;
+}

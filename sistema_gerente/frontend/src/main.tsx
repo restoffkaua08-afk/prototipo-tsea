@@ -9,7 +9,7 @@ import { ParametersPage } from "./pages/ParametersPage";
 import { TraceabilityPage } from "./pages/TraceabilityPage";
 import "./styles.css";
 
-const API = "http://127.0.0.1:8020/api";
+const API = "/api";
 
 type TwinTab = "scenarios" | "manual" | "result" | "assistant" | "technical";
 type ParamTab = "tanks" | "hoses" | "recipes" | "formulas" | "operators";
@@ -60,17 +60,17 @@ function statusLabel(status: unknown) {
 
   const map: Record<string, string> = {
     success: "Operacional",
-    warning: "AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o",
-    critical: "CrãÆ’Ã‚Â­tico",
-    running: "Em execuãÆ’Ã‚Â§ãÆ’Ã‚Â£o",
+    warning: "Atenção",
+    critical: "Crítico",
+    running: "Em execução",
     paused: "Pausado",
     stopped: "Parado",
-    concluido: "ConcluãÆ’Ã‚Â­do",
+    concluido: "Concluído",
     abortado: "Abortado",
     em_andamento: "Em andamento",
-    emergency: "EmergãÆ’Ã‚Âªncia",
-    available: "DisponãÆ’Ã‚Â­vel",
-    attention: "AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o",
+    emergency: "Emergência",
+    available: "Disponível",
+    attention: "Atenção",
   };
 
   return map[value] || String(status || "--");
@@ -80,7 +80,7 @@ function tone(status: unknown) {
   const value = String(status || "").toLowerCase();
 
   if (["success", "concluido", "running", "ok", "operacional", "available"].includes(value)) return "ok";
-  if (["warning", "paused", "em_andamento", "atenãÆ’Ã‚Â§ãÆ’Ã‚Â£o", "atencao", "attention"].includes(value)) return "warn";
+  if (["warning", "paused", "em_andamento", "atenção", "atencao", "attention"].includes(value)) return "warn";
   if (["critical", "abortado", "emergency", "falha", "fault"].includes(value)) return "bad";
 
   return "neutral";
@@ -362,7 +362,7 @@ function ComponentHealthPanel({ state, allTanks, allHoses }: any) {
       tank.code || `Tanque ${index + 1}`,
       "PressãÆ’Ã‚Â£o",
       fmt(pressure, "mbar"),
-      risk >= 82 ? "CrãÆ’Ã‚Â­tico" : risk >= 65 ? "AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "Operacional",
+      risk >= 82 ? "Crítico" : risk >= 65 ? "Atenção" : "Operacional",
       fmt(risk >= 82 ? 62 : risk >= 65 ? 82 : 98, "%")
     ];
   });
@@ -415,7 +415,7 @@ function SimulationTraceability({ result, state, selectedScenario, hoses, tanks,
     [<b>Bomba primãÆ’Ã‚Â¡ria</b>, EQUIPMENT_SPECS.primaryPump.model, state?.primary_pump?.running ? "Ligada" : "Pronta", "98%", EQUIPMENT_SPECS.primaryPump.nominalSpeed50Hz, EQUIPMENT_SPECS.primaryPump.role],
     [<b>Bomba secundãÆ’Ã‚Â¡ria</b>, EQUIPMENT_SPECS.rootsPump.model, finalPressure <= Number(config?.roots_start_pressure_mbar || 50) ? "Liberada" : "Bloqueada", finalPressure <= Number(config?.roots_start_pressure_mbar || 50) ? "96%" : "Aguardando faixa", EQUIPMENT_SPECS.rootsPump.nominalSpeed50Hz, "Acionamento condicionado ãÆ’Ã‚Â  pressãÆ’Ã‚Â£o segura."],
     [<b>Mangueira de vãÆ’Ã‚Â¡cuo</b>, selectedHose?.code || `MG-${config?.hose_id || "--"}`, hoseLoss > 1 ? "Perda elevada" : "Operacional", fmt(Math.max(70, 100 - hoseLoss * 12), "%"), `Fator ${fmt(hoseLoss)}`, "Perda de carga e restriãÆ’Ã‚Â§ãÆ’Ã‚Â£o de fluxo."],
-    [<b>Tanque de processo</b>, selectedTank?.code || config?.tank_type || "Tanque simulado", risk >= 82 ? "CrãÆ’Ã‚Â­tico" : risk >= 65 ? "AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "Operacional", fmt(Math.max(55, 100 - risk * 0.45), "%"), fmt(risk, "%"), "Margem estrutural e pressãÆ’Ã‚Â£o efetiva."],
+    [<b>Tanque de processo</b>, selectedTank?.code || config?.tank_type || "Tanque simulado", risk >= 82 ? "Crítico" : risk >= 65 ? "Atenção" : "Operacional", fmt(Math.max(55, 100 - risk * 0.45), "%"), fmt(risk, "%"), "Margem estrutural e pressãÆ’Ã‚Â£o efetiva."],
     [<b>Sensor de pressãÆ’Ã‚Â£o</b>, `SP-${selectedTank?.code || "SIM"}`, config?.simulate_sensor_failure ? "Falha simulada" : "Online", config?.simulate_sensor_failure ? "35%" : "98%", fmt(finalPressure, "mbar"), "Mede pressãÆ’Ã‚Â£o do tanque e alimenta diagnãÆ’Ã‚Â³stico."],
     [<b>Sistema de ãÆ’Ã‚Â³leo</b>, "InjeãÆ’Ã‚Â§ãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo", oilFlow < 1.5 ? "VazãÆ’Ã‚Â£o baixa" : "Operacional", fmt(Math.min(100, Math.max(40, oilFlow * 45)), "%"), fmt(oilFlow, "L/min"), "Afeta vedaãÆ’Ã‚Â§ãÆ’Ã‚Â£o, estabilidade da curva e proteãÆ’Ã‚Â§ãÆ’Ã‚Â£o do conjunto."]
   ];
@@ -550,8 +550,8 @@ function tseaBuildSimulationResult(config: any, state: any, hoses: any[], tanks:
   const recommendation = status === "success"
     ? "Manter parãÆ’Ã‚Â¢metros e registrar o cenãÆ’Ã‚Â¡rio como referãÆ’Ã‚Âªncia operacional."
     : status === "warning"
-      ? "Revisar mangueira, vazãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo, sensores e condiãÆ’Ã‚Â§ãÆ’Ã‚Â£o das bombas antes da execuãÆ’Ã‚Â§ãÆ’Ã‚Â£o real."
-      : "Bloquear execuãÆ’Ã‚Â§ãÆ’Ã‚Â£o, revisar vedaãÆ’Ã‚Â§ãÆ’Ã‚Â£o, mangueira, bomba secundãÆ’Ã‚Â¡ria, sensores e limites estruturais.";
+      ? "Revisar mangueira, vazãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo, sensores e condiãÆ’Ã‚Â§ãÆ’Ã‚Â£o das bombas antes da execução real."
+      : "Bloquear execução, revisar vedaãÆ’Ã‚Â§ãÆ’Ã‚Â£o, mangueira, bomba secundãÆ’Ã‚Â¡ria, sensores e limites estruturais.";
 
   const timeline = Array.from({ length: 18 }).map((_, index) => {
     const step = index / 17;
@@ -645,7 +645,7 @@ function TseaComponentHealthPanel({ state, allTanks, allHoses }: any) {
       tank?.code || item?.code || `Tanque ${index + 1}`,
       "PressãÆ’Ã‚Â£o",
       fmt(pressure, "mbar"),
-      risk >= 82 ? "CrãÆ’Ã‚Â­tico" : risk >= 65 ? "AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "Operacional",
+      risk >= 82 ? "Crítico" : risk >= 65 ? "Atenção" : "Operacional",
       fmt(risk >= 82 ? 62 : risk >= 65 ? 82 : 98, "%")
     ];
   });
@@ -695,7 +695,7 @@ function TseaSimulationTraceability({ result, state, hoses, tanks }: any) {
     [<b>Bomba primãÆ’Ã‚Â¡ria</b>, TSEA_EQUIPMENT_SPECS.primaryPump.model, state?.primary_pump?.running ? "Ligada" : "Pronta", "98%", TSEA_EQUIPMENT_SPECS.primaryPump.nominalSpeed50Hz, TSEA_EQUIPMENT_SPECS.primaryPump.role],
     [<b>Bomba secundãÆ’Ã‚Â¡ria</b>, TSEA_EQUIPMENT_SPECS.secondaryPump.model, finalPressure <= Number(config?.roots_start_pressure_mbar || 50) ? "Liberada" : "Bloqueada", finalPressure <= Number(config?.roots_start_pressure_mbar || 50) ? "96%" : "Aguardando faixa", TSEA_EQUIPMENT_SPECS.secondaryPump.nominalSpeed50Hz, "Acionamento condicionado ãÆ’Ã‚Â  pressãÆ’Ã‚Â£o segura."],
     [<b>Mangueira de vãÆ’Ã‚Â¡cuo</b>, selectedHose?.code || `MG-${config?.hose_id || "--"}`, hoseLoss > 1 ? "Perda elevada" : "Operacional", fmt(Math.max(70, 100 - hoseLoss * 12), "%"), `Fator ${fmt(hoseLoss)}`, "Perda de carga e restriãÆ’Ã‚Â§ãÆ’Ã‚Â£o de fluxo."],
-    [<b>Tanque de processo</b>, selectedTank?.code || config?.tank_type || "Tanque simulado", risk >= 82 ? "CrãÆ’Ã‚Â­tico" : risk >= 65 ? "AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "Operacional", fmt(Math.max(55, 100 - risk * 0.45), "%"), fmt(risk, "%"), "Margem estrutural e pressãÆ’Ã‚Â£o efetiva."],
+    [<b>Tanque de processo</b>, selectedTank?.code || config?.tank_type || "Tanque simulado", risk >= 82 ? "Crítico" : risk >= 65 ? "Atenção" : "Operacional", fmt(Math.max(55, 100 - risk * 0.45), "%"), fmt(risk, "%"), "Margem estrutural e pressãÆ’Ã‚Â£o efetiva."],
     [<b>Sensor de pressãÆ’Ã‚Â£o</b>, `SP-${selectedTank?.code || "SIM"}`, config?.simulate_sensor_failure ? "Falha simulada" : "Online", config?.simulate_sensor_failure ? "35%" : "98%", fmt(finalPressure, "mbar"), "Mede pressãÆ’Ã‚Â£o do tanque e alimenta diagnãÆ’Ã‚Â³stico."],
     [<b>Sistema de ãÆ’Ã‚Â³leo</b>, "InjeãÆ’Ã‚Â§ãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo", oilFlow < 1.5 ? "VazãÆ’Ã‚Â£o baixa" : "Operacional", fmt(Math.min(100, Math.max(40, oilFlow * 45)), "%"), fmt(oilFlow, "L/min"), "Afeta vedaãÆ’Ã‚Â§ãÆ’Ã‚Â£o, estabilidade da curva e proteãÆ’Ã‚Â§ãÆ’Ã‚Â£o do conjunto."]
   ];
@@ -1158,7 +1158,7 @@ function TseaDigitalTwin10({ state, allTanks, allHoses }: any) {
         : "SimulaãÆ’Ã‚Â§ãÆ’Ã‚Â£o reprovada. O ciclo apresenta risco elevado e nãÆ’Ã‚Â£o deve ser liberado sem revisãÆ’Ã‚Â£o.";
 
     const probableCause = status === "success"
-      ? "Nenhum componente crãÆ’Ã‚Â­tico identificado."
+      ? "Nenhum componente crítico identificado."
       : risk >= 82 && config?.simulate_hose_leak
         ? "Perda simulada na mangueira elevou o risco e prejudicou a estabilidade do ciclo."
         : oilFlow < 1.5
@@ -1172,8 +1172,8 @@ function TseaDigitalTwin10({ state, allTanks, allHoses }: any) {
     const recommendation = status === "success"
       ? "Manter parãÆ’Ã‚Â¢metros e registrar o cenãÆ’Ã‚Â¡rio como referãÆ’Ã‚Âªncia operacional."
       : status === "warning"
-        ? "Revisar mangueira, vazãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo, sensores e saãÆ’Ã‚Âºde das bombas antes da execuãÆ’Ã‚Â§ãÆ’Ã‚Â£o real."
-        : "Bloquear execuãÆ’Ã‚Â§ãÆ’Ã‚Â£o, revisar vedaãÆ’Ã‚Â§ãÆ’Ã‚Â£o, mangueira, sensores, bomba primãÆ’Ã‚Â¡ria e bomba secundãÆ’Ã‚Â¡ria.";
+        ? "Revisar mangueira, vazãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo, sensores e saãÆ’Ã‚Âºde das bombas antes da execução real."
+        : "Bloquear execução, revisar vedaãÆ’Ã‚Â§ãÆ’Ã‚Â£o, mangueira, sensores, bomba primãÆ’Ã‚Â¡ria e bomba secundãÆ’Ã‚Â¡ria.";
 
     const timeline = Array.from({ length: 22 }).map((_, index) => {
       const step = index / 21;
@@ -1213,7 +1213,7 @@ function TseaDigitalTwin10({ state, allTanks, allHoses }: any) {
       {
         type: "Mangueira de vãÆ’Ã‚Â¡cuo",
         id: hose?.code || hose?.codigo || `MG-${config?.hose_id || "--"}`,
-        status: hoseLoss > 1 || config?.simulate_hose_leak ? "AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "Operacional",
+        status: hoseLoss > 1 || config?.simulate_hose_leak ? "Atenção" : "Operacional",
         performance: fmt(Math.max(45, 100 - hoseLoss * 18 - (config?.simulate_hose_leak ? 25 : 0)), "%"),
         reading: `Fator ${fmt(hoseLoss)}`,
         impact: "Perda de carga, restriãÆ’Ã‚Â§ãÆ’Ã‚Â£o de fluxo e tempo de ciclo."
@@ -1221,7 +1221,7 @@ function TseaDigitalTwin10({ state, allTanks, allHoses }: any) {
       {
         type: "Tanque de processo",
         id: tank?.code || tank?.codigo || config?.tank_type || "Tanque simulado",
-        status: risk >= 82 ? "CrãÆ’Ã‚Â­tico" : risk >= 65 ? "AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "Operacional",
+        status: risk >= 82 ? "Crítico" : risk >= 65 ? "Atenção" : "Operacional",
         performance: fmt(Math.max(45, 100 - risk * 0.42), "%"),
         reading: `${fmt(finalPressure, "mbar")} final`,
         impact: `Margem estrutural: ${fmt(safetyMargin, "mbar")}`
@@ -1249,7 +1249,7 @@ function TseaDigitalTwin10({ state, allTanks, allHoses }: any) {
       { step: "EvacuaãÆ’Ã‚Â§ãÆ’Ã‚Â£o inicial", status: "ConcluãÆ’Ã‚Â­da", ref: "Bomba primãÆ’Ã‚Â¡ria", log: "ReduãÆ’Ã‚Â§ãÆ’Ã‚Â£o inicial da pressãÆ’Ã‚Â£o no tanque." },
       { step: "Acionamento da bomba secundãÆ’Ã‚Â¡ria", status: secondaryReleased ? "Liberado" : "Bloqueado", ref: `${fmt(secondaryStart, "mbar")}`, log: "Intertravamento avaliado pela pressãÆ’Ã‚Â£o segura." },
       { step: "InjeãÆ’Ã‚Â§ãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo", status: oilFlow < 1.5 ? "RestriãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "Normal", ref: `${fmt(oilFlow, "L/min")}`, log: "CondiãÆ’Ã‚Â§ãÆ’Ã‚Â£o aplicada ao cãÆ’Ã‚Â¡lculo de estabilidade." },
-      { step: "DiagnãÆ’Ã‚Â³stico final", status: status === "success" ? "Aprovado" : status === "warning" ? "AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "Reprovado", ref: `${fmt(risk, "%")}`, log: recommendation }
+      { step: "DiagnãÆ’Ã‚Â³stico final", status: status === "success" ? "Aprovado" : status === "warning" ? "Atenção" : "Reprovado", ref: `${fmt(risk, "%")}`, log: recommendation }
     ];
 
     return {
@@ -1520,7 +1520,7 @@ function TseaDigitalTwin10({ state, allTanks, allHoses }: any) {
               [<b>Status final</b>, <Badge value={target.status} />, target.status === "success" ? "Bem-sucedida" : target.status === "warning" ? "Aprovada com restriãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "Reprovada"],
               [<b>PressãÆ’Ã‚Â£o final (mbar)</b>, fmt(target.metrics?.final_real_pressure_mbar, "mbar"), "Valor final previsto pelo modelo."],
               [<b>Tempo estimado (s)</b>, fmt(target.metrics?.estimated_time_seconds, "s"), "DuraãÆ’Ã‚Â§ãÆ’Ã‚Â£o (s) prevista do ciclo."],
-              [<b>Risco mãÆ’Ã‚Â¡ximo (%)</b>, fmt(target.metrics?.max_collapse_risk_pct, "%"), target.metrics?.max_collapse_risk_pct >= 82 ? "Risco crãÆ’Ã‚Â­tico" : target.metrics?.max_collapse_risk_pct >= 65 ? "AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o" : "Seguro"],
+              [<b>Risco mãÆ’Ã‚Â¡ximo (%)</b>, fmt(target.metrics?.max_collapse_risk_pct, "%"), target.metrics?.max_collapse_risk_pct >= 82 ? "Risco crítico" : target.metrics?.max_collapse_risk_pct >= 65 ? "Atenção" : "Seguro"],
               [<b>Margem de seguranãÆ’Ã‚Â§a (mbar)</b>, fmt(target.metrics?.safety_margin_mbar, "mbar"), "DistãÆ’Ã‚Â¢ncia estimada atãÆ’Ã‚Â© o limite do tanque."],
               [<b>Motivo principal</b>, target.probableCause || "--", target.recommendation || "--"]
             ]}
@@ -1702,8 +1702,8 @@ function tseaHRStatusLabel(status: any) {
   const value = String(status || "").toLowerCase();
 
   if (["success", "concluido", "concluãÆ’Ã‚Â­do", "operacional", "ok"].includes(value)) return "Bem-sucedido";
-  if (["warning", "atenãÆ’Ã‚Â§ãÆ’Ã‚Â£o", "atencao", "em_andamento"].includes(value)) return "Aprovado com restriãÆ’Ã‚Â§ãÆ’Ã‚Â£o";
-  if (["critical", "crãÆ’Ã‚Â­tico", "critico", "abortado", "falha"].includes(value)) return "Reprovado / CrãÆ’Ã‚Â­tico";
+  if (["warning", "atenção", "atencao", "em_andamento"].includes(value)) return "Aprovado com restriãÆ’Ã‚Â§ãÆ’Ã‚Â£o";
+  if (["critical", "crítico", "critico", "abortado", "falha"].includes(value)) return "Reprovado / Crítico";
 
   return String(status || "Registrado");
 }
@@ -2360,7 +2360,7 @@ function TseaReportsMenuV2({ operations = [], state, allTanks = [], allHoses = [
               <option value="all">Todos</option>
               <option value="success">Bem-sucedido</option>
               <option value="warning">RestriãÆ’Ã‚Â§ãÆ’Ã‚Â£o</option>
-              <option value="critical">CrãÆ’Ã‚Â­tico</option>
+              <option value="critical">Crítico</option>
             </select>
           </Field>
         </div>
@@ -2488,9 +2488,9 @@ function TseaTechnicalReferenceTables() {
   const marginRows = [
     ["Desvio percentual", "|valor medido - valor esperado| / valor esperado ãÆ’Ã¢â‚¬â€ 100", "Calcula o quanto o valor real/simulado se afastou do esperado."],
     ["Dentro da margem", "desvio ãÂ¢Ã¢â‚¬Â°Ã‚Â¤ margem permitida", "Status Operacional / semãÆ’Ã‚Â¡foro verde."],
-    ["Faixa de atenãÆ’Ã‚Â§ãÆ’Ã‚Â£o", "margem < desvio ãÂ¢Ã¢â‚¬Â°Ã‚Â¤ 2 ãÆ’Ã¢â‚¬â€ margem", "Status AtenãÆ’Ã‚Â§ãÆ’Ã‚Â£o / semãÆ’Ã‚Â¡foro amarelo."],
-    ["Faixa crãÆ’Ã‚Â­tica", "desvio > 2 ãÆ’Ã¢â‚¬â€ margem", "Status CrãÆ’Ã‚Â­tico / semãÆ’Ã‚Â¡foro vermelho."],
-    ["Status geral", "se qualquer parãÆ’Ã‚Â¢metro essencial for crãÆ’Ã‚Â­tico, o processo fica crãÆ’Ã‚Â­tico", "Regra conservadora para seguranãÆ’Ã‚Â§a operacional."],
+    ["Faixa de atenção", "margem < desvio ãÂ¢Ã¢â‚¬Â°Ã‚Â¤ 2 ãÆ’Ã¢â‚¬â€ margem", "Status Atenção / semãÆ’Ã‚Â¡foro amarelo."],
+    ["Faixa crãÆ’Ã‚Â­tica", "desvio > 2 ãÆ’Ã¢â‚¬â€ margem", "Status Crítico / semãÆ’Ã‚Â¡foro vermelho."],
+    ["Status geral", "se qualquer parãÆ’Ã‚Â¢metro essencial for crítico, o processo fica crítico", "Regra conservadora para seguranãÆ’Ã‚Â§a operacional."],
     ["AplicaãÆ’Ã‚Â§ãÆ’Ã‚Â£o futura", "pressãÆ’Ã‚Â£o, tempo, vazãÆ’Ã‚Â£o de ãÆ’Ã‚Â³leo, sensor e desempenho das bombas", "A margem de erro poderãÆ’Ã‚Â¡ padronizar os alertas do sistema e do semãÆ’Ã‚Â¡foro fãÆ’Ã‚Â­sico."]
   ];
 
@@ -2787,7 +2787,7 @@ function App() {
     } else if (q.includes("risco")) {
       answer += " O ãÆ’Ã‚Â­ndice de risco deve ser comparado ao limite estrutural definido para o tanque e ãÆ’Ã‚Â  margem operacional de seguranãÆ’Ã‚Â§a.";
     } else {
-      answer += " Analise curva esperada, curva real/simulada, mangueira de vãÆ’Ã‚Â¡cuo, ãÆ’Ã‚Â³leo e acionamento da bomba secundãÆ’Ã‚Â¡ria antes de liberar a execuãÆ’Ã‚Â§ãÆ’Ã‚Â£o.";
+      answer += " Analise curva esperada, curva real/simulada, mangueira de vãÆ’Ã‚Â¡cuo, ãÆ’Ã‚Â³leo e acionamento da bomba secundãÆ’Ã‚Â¡ria antes de liberar a execução.";
     }
 
     setAssistantAnswer(answer);

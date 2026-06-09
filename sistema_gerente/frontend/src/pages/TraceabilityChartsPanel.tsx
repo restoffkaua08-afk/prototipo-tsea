@@ -3,7 +3,7 @@ import "./TraceabilityChartsPanel.css";
 
 const API_BASES = ["/api"];
 
-type ChartType = "line" | "bar" | "pie";
+type ChartType = "line" | "bar" | "pie" | "doughnut";
 type MetricId =
   | "vacuum_ramp"
   | "operations_by_day"
@@ -13,7 +13,9 @@ type MetricId =
   | "equipment_usage"
   | "machine_performance"
   | "logs_by_severity"
-  | "reports_exported";
+  | "reports_exported"
+  | "pressure_target_vs_measured"
+  | "oil_injected_by_operation";
 
 type GeneratedSheet = {
   title: string;
@@ -67,7 +69,53 @@ const METRICS: {
   { id: "machine_performance", label: "Desempenho das máquinas", group: "Equipamentos", allowed: ["bar", "line"], recommended: "bar" },
   { id: "logs_by_severity", label: "Logs por severidade", group: "Auditoria", allowed: ["bar", "pie"], recommended: "bar" },
   { id: "reports_exported", label: "Relatórios exportados", group: "Relatórios", allowed: ["bar", "line"], recommended: "bar" },
+  { id: "pressure_target_vs_measured", label: "Pressão alvo vs medida", group: "Processo", allowed: ["line", "bar"], recommended: "line" },
+  { id: "oil_injected_by_operation", label: "Óleo injetado por operação", group: "Óleo", allowed: ["bar", "line"], recommended: "bar" },
 ];
+
+type UiMetric = {
+  id: MetricId | string;
+  label: string;
+  group: string;
+  allowed: ChartType[];
+  recommended: ChartType;
+  question?: string;
+};
+
+const CHART_TYPES: ChartType[] = ["line", "bar", "pie", "doughnut"];
+
+function normalizeChartType(value: unknown, fallback: ChartType = "bar"): ChartType {
+  const raw = String(value || "").toLowerCase();
+
+  if (CHART_TYPES.includes(raw as ChartType)) {
+    return raw as ChartType;
+  }
+
+  return fallback;
+}
+
+function normalizeMetric(item: any): UiMetric {
+  const recommended = normalizeChartType(item?.recommended ?? item?.recommended_chart ?? item?.chart_type, "bar");
+
+  const rawAllowed =
+    Array.isArray(item?.allowed) ? item.allowed :
+    Array.isArray(item?.allowed_chart_types) ? item.allowed_chart_types :
+    Array.isArray(item?.chart_types) ? item.chart_types :
+    [recommended];
+
+  const allowed = rawAllowed
+    .map((value: unknown) => normalizeChartType(value, recommended))
+    .filter((value: ChartType, index: number, array: ChartType[]) => array.indexOf(value) === index);
+
+  return {
+    id: item?.id || "operations_by_day",
+    label: item?.label || item?.title || item?.id || "Indicador",
+    group: item?.group || "Indicadores",
+    allowed: allowed.length ? allowed : [recommended],
+    recommended,
+    question: item?.question || "",
+  };
+}
 
 async function requestJson<T>(path: string, options: RequestInit = {}): Promise<T> {
   const errors: string[] = [];
@@ -75,7 +123,7 @@ async function requestJson<T>(path: string, options: RequestInit = {}): Promise<
   for (const base of API_BASES) {
     try {
       const response = await fetch(base + path, {
-        mode: "cors",
+        mode: "same-origin",
         cache: "no-store",
         headers: {
           "Content-Type": "application/json",
@@ -160,7 +208,7 @@ function pathFrom(points: { x: number; y: number }[]) {
 }
 
 function cleanData(chart: GeneratedChart) {
-  const values = chart.series?.[0]?.data || [];
+  const values = (chart.series || []).flatMap((serie) => serie.data || []);
   const labels = chart.labels || [];
 
   return values
@@ -236,7 +284,104 @@ function ChartSvg({ chart }: { chart: GeneratedChart }) {
     );
   }
 
+  if (chart.chart_type === "bar") return <BarSvg chart={chart} />;
+  if (chart.chart_type === "pie" || chart.chart_type === "doughnut") return <PieSvg chart={chart} />;
   return <LineSvg chart={chart} />;
+}
+
+
+function BarSvg({ chart }: { chart: GeneratedChart }) {
+  const width = 920;
+  const height = 360;
+  const left = 82;
+  const right = 36;
+  const top = 30;
+  const bottom = 60;
+
+  const data = cleanData(chart);
+  const values = data.map((item) => item.value);
+  const maxY = Math.max(1, ...values);
+  const cw = width - left - right;
+  const barW = Math.max(12, Math.min(54, cw / Math.max(data.length, 1) - 8));
+  const yLabels = [maxY, maxY * 0.8, maxY * 0.6, maxY * 0.4, maxY * 0.2, 0].map((n) => fmt(n));
+  const xLabels = [0, 0.2, 0.4, 0.6, 0.8, 1].map((factor) => data[Math.round((data.length - 1) * factor)]?.label || "");
+
+  return (
+    <svg className="tc-svg" viewBox={`0 0 ${width} ${height}`}>
+      <Axis width={width} height={height} left={left} right={right} top={top} bottom={bottom} xLabels={xLabels} yLabels={yLabels} />
+      {data.map((item, index) => {
+        const x = scale(index, 0, Math.max(data.length - 1, 1), left + barW, width - right - barW);
+        const y = scale(item.value, 0, maxY, height - bottom, top);
+        const h = height - bottom - y;
+
+        return (
+          <g key={index}>
+            <rect className="tc-bar" x={x - barW / 2} y={y} width={barW} height={Math.max(2, h)} rx={6} />
+            <title>{item.label}: {fmt(item.value)}</title>
+          </g>
+        );
+      })}
+      <text className="tc-axis-title" x={width / 2} y={height - 5} textAnchor="middle">Categoria / período</text>
+      <text className="tc-axis-title" x={17} y={height / 2} transform={`rotate(-90 17 ${height / 2})`} textAnchor="middle">Valor</text>
+    </svg>
+  );
+}
+
+function PieSvg({ chart }: { chart: GeneratedChart }) {
+  const data = cleanData(chart);
+  const total = data.reduce((sum, item) => sum + Math.max(0, item.value), 0);
+
+  if (!total) {
+    return (
+      <div className="tc-chart-empty">
+        <strong>Sem valores para gráfico circular</strong>
+        <span>{chart.meta?.source || "Fonte indisponível"}</span>
+      </div>
+    );
+  }
+
+  let acc = 0;
+  const radius = 120;
+  const cx = 210;
+  const cy = 160;
+
+  function point(angle: number) {
+    return {
+      x: cx + radius * Math.cos(angle),
+      y: cy + radius * Math.sin(angle),
+    };
+  }
+
+  return (
+    <svg className="tc-svg tc-pie-svg" viewBox="0 0 920 360">
+      {data.map((item, index) => {
+        const start = (acc / total) * Math.PI * 2 - Math.PI / 2;
+        acc += Math.max(0, item.value);
+        const end = (acc / total) * Math.PI * 2 - Math.PI / 2;
+        const p1 = point(start);
+        const p2 = point(end);
+        const large = end - start > Math.PI ? 1 : 0;
+        const d = `M ${cx} ${cy} L ${p1.x} ${p1.y} A ${radius} ${radius} 0 ${large} 1 ${p2.x} ${p2.y} Z`;
+
+        return (
+          <path key={index} className={`tc-pie-slice slice-${index % 8}`} d={d}>
+            <title>{item.label}: {fmt(item.value)}</title>
+          </path>
+        );
+      })}
+
+      {chart.chart_type === "doughnut" && <circle cx={cx} cy={cy} r={62} className="tc-doughnut-hole" />}
+
+      <g className="tc-pie-legend">
+        {data.slice(0, 8).map((item, index) => (
+          <g key={index} transform={`translate(420 ${60 + index * 30})`}>
+            <rect className={`tc-pie-dot slice-${index % 8}`} width="14" height="14" rx="4" />
+            <text x="24" y="12">{item.label} · {fmt(item.value)}</text>
+          </g>
+        ))}
+      </g>
+    </svg>
+  );
 }
 
 function LineSvg({ chart }: { chart: GeneratedChart }) {
@@ -364,13 +509,16 @@ export function RealtimeRamp({ compact = false }: { compact?: boolean }) {
 export function TraceabilityChartsPanel() {
   const [metric, setMetric] = useState<MetricId>("operations_by_day");
   const [catalog, setCatalog] = useState<any | null>(null);
-  const selectedMetric = useMemo(() => {
-    if (catalog && Array.isArray(catalog.metrics)) {
-      return (catalog.metrics.find((m: any) => m.id === metric) as any) || catalog.metrics[0];
-    }
-    return METRICS.find((item) => item.id === metric) || METRICS[0];
+  const selectedMetric = useMemo<UiMetric>(() => {
+    const catalogMetric = catalog && Array.isArray(catalog.metrics)
+      ? catalog.metrics.find((item: any) => item.id === metric)
+      : null;
+
+    const fallbackMetric = METRICS.find((item) => item.id === metric) || METRICS[0];
+
+    return normalizeMetric(catalogMetric || fallbackMetric);
   }, [catalog, metric]);
-  const [chartType, setChartType] = useState<ChartType>(selectedMetric.recommended);
+  const [chartType, setChartType] = useState<ChartType>("bar");
   const [period, setPeriod] = useState("month");
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState<GoogleStatus | null>(null);

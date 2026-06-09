@@ -878,7 +878,7 @@ def api_statistics(
 ) -> dict[str, Any]:
     chart_type = chart_type.lower().strip()
 
-    if chart_type not in {"line", "bar", "pie"}:
+    if chart_type not in {"line", "bar", "pie", "doughnut"}:
         chart_type = "bar"
 
     metric = metric.lower().strip()
