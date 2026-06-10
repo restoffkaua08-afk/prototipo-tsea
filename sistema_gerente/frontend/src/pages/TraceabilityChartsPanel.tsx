@@ -190,6 +190,23 @@ function formatApiError(payload: any, status: number) {
   return new Error(`Erro HTTP ${status}`);
 }
 
+
+function isDebugLikeMessage(value: unknown) {
+  const text = String(value || "").trim();
+
+  if (!text) return false;
+
+  return (
+    text.startsWith("{") ||
+    text.startsWith("[") ||
+    text.includes("\"dependencies_available\"") ||
+    text.includes("\"client_secret_exists\"") ||
+    text.includes("\"redirect_uri\"") ||
+    text.includes("\"authenticated\"") ||
+    text.includes("\"generated\"")
+  );
+}
+
 function fmt(value: unknown, suffix = "") {
   const n = Number(value);
 
@@ -486,7 +503,7 @@ export function RealtimeRamp({ compact = false }: { compact?: boolean }) {
         </div>
       </div>
 
-      {error && <div className="tc-error">{error}</div>}
+      {error && !isDebugLikeMessage(error) && <div className="tc-error">{error}</div>}
 
       <div className="tc-realtime-grid">
         <div className="tc-realtime-chart">
@@ -570,20 +587,7 @@ export function TraceabilityChartsPanel() {
       setAuthenticating(false);
     }
   }
-
-  async function testGoogleConnection() {
-    setError("");
-
-    try {
-      const debug = await requestJson<any>("/google-sheets/debug");
-      // show a concise status
-      setError(JSON.stringify(debug, null, 2));
-    } catch (err: any) {
-      setError(err instanceof Error ? err.message : JSON.stringify(err));
-    }
-  }
-
-  async function reauthorizeGoogle() {
+async function reauthorizeGoogle() {
     setError("");
 
     try {
@@ -857,9 +861,6 @@ export function TraceabilityChartsPanel() {
             <button className="tc-secondary" onClick={reauthorizeGoogle} disabled={!status?.client_secret_exists}>
               Reautorizar Google
             </button>
-            <button className="tc-secondary" onClick={testGoogleConnection}>
-              Testar conexão Google
-            </button>
           </aside>
 
           <main className="sheets-generator-card">
@@ -932,7 +933,7 @@ export function TraceabilityChartsPanel() {
               Visualizar gráfico
             </button>
 
-            {error && <div className="tc-error">{error}</div>}
+            {error && !isDebugLikeMessage(error) && <div className="tc-error">{error}</div>}
 
             {lastSheet && (
               <div className="sheets-result">
