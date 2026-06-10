@@ -191,6 +191,23 @@ function formatApiError(payload: any, status: number) {
 }
 
 
+function isLikeMessage(value: unknown) {
+  const text = String(value || "").trim();
+
+  if (!text) return false;
+
+  return (
+    text.startsWith("{") ||
+    text.startsWith("[") ||
+    text.includes("\"dependencies_available\"") ||
+    text.includes("\"client_secret_exists\"") ||
+    text.includes("\"redirect_uri\"") ||
+    text.includes("\"authenticated\"") ||
+    text.includes("\"generated\"")
+  );
+}
+
+
 function isDebugLikeMessage(value: unknown) {
   const text = String(value || "").trim();
 
@@ -503,7 +520,7 @@ export function RealtimeRamp({ compact = false }: { compact?: boolean }) {
         </div>
       </div>
 
-      {error && !isDebugLikeMessage(error) && <div className="tc-error">{error}</div>}
+      {error && !isLikeMessage(error) && <div className="tc-error">{error}</div>}
 
       <div className="tc-realtime-grid">
         <div className="tc-realtime-chart">
@@ -933,7 +950,7 @@ async function reauthorizeGoogle() {
               Visualizar gráfico
             </button>
 
-            {error && !isDebugLikeMessage(error) && <div className="tc-error">{error}</div>}
+            {error && !isLikeMessage(error) && <div className="tc-error">{error}</div>}
 
             {lastSheet && (
               <div className="sheets-result">
