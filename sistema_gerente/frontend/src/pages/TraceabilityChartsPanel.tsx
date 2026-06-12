@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import "./TraceabilityChartsPanel.css";
 
 const API_BASES = ["/api"];
@@ -853,7 +853,7 @@ async function reauthorizeGoogle() {
         <div className="tc-builder-header">
           <div>
             <span>Análise gerencial</span>
-            <h3>Indicadores e Gráficos</h3>
+            <h3>Dashboard</h3>
           </div>
 
           <div className={`tc-mode-pill ${status?.authenticated ? "ok" : "warn"}`}>
@@ -881,7 +881,7 @@ async function reauthorizeGoogle() {
           </aside>
 
           <main className="sheets-generator-card">
-            <h4>Gerar gráfico no Google Planilhas</h4>
+            <h4>Dashboard</h4>
 
             <div className="sheets-form-grid">
               <label>

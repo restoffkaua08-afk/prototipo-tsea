@@ -1,4 +1,4 @@
-.tc-root {
+﻿.tc-root {
   display: grid;
   gap: 18px;
   color: #111827;
@@ -406,4 +406,131 @@
 .tc-pie-legend text {
   fill: currentColor;
   font-size: 13px;
+}
+/* =========================================================
+   DASHBOARD LIMPO - SEM GOOGLE E SEM TELA DE APRESENTACAO
+   ========================================================= */
+
+.tc-debug,
+.tc-mode-pill,
+.tc-error,
+.google-removed-action,
+.sheets-layout.oauth-mode aside,
+.sheets-history-card,
+.sheets-status-card,
+.sheets-auth-card,
+.dashboard-local-card,
+.dashboard-local-text {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Remove textos explicativos/legendas que nao fazem parte da tela final */
+.tc-panel-header p,
+.sheets-generator-card > p,
+.sheets-generator-card small,
+.sheets-generator-card .description,
+.sheets-generator-card .hint,
+.sheets-generator-card .muted {
+  display: none !important;
+}
+
+/* Tela ocupa o espaço sem card lateral */
+.sheets-layout.oauth-mode {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.sheets-layout.oauth-mode > main,
+.sheets-generator-card {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.sheets-generator-card {
+  padding: 22px !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.10) !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06) !important;
+}
+
+.sheets-generator-card::before,
+.sheets-generator-card::after {
+  content: none !important;
+  display: none !important;
+}
+
+.sheets-generator-card h4 {
+  margin: 0 0 18px !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  color: #0f172a !important;
+}
+
+/* Formulario mais compacto */
+.sheets-form-grid {
+  display: grid !important;
+  grid-template-columns: 1.2fr 0.8fr 0.8fr 1.2fr !important;
+  gap: 14px !important;
+  align-items: end !important;
+  width: 100% !important;
+}
+
+.sheets-form-grid label {
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 7px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  color: #334155 !important;
+}
+
+.sheets-form-grid select,
+.sheets-form-grid input {
+  height: 42px !important;
+  width: 100% !important;
+  border-radius: 12px !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  padding: 0 12px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  outline: none !important;
+}
+
+.sheets-form-grid select:focus,
+.sheets-form-grid input:focus {
+  background: #ffffff !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14) !important;
+}
+
+.sheets-main-action {
+  margin-top: 16px !important;
+  min-height: 42px !important;
+  padding: 0 18px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+
+.sheets-main-action[style] {
+  margin-left: 0 !important;
+}
+
+@media (max-width: 1100px) {
+  .sheets-form-grid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .sheets-form-grid {
+    grid-template-columns: 1fr !important;
+  }
 }

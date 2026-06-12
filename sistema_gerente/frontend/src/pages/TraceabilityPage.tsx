@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { Badge, Empty, fmt, Section, Table } from "../components/ui";
 import { TraceabilityChartsPanel } from "./TraceabilityChartsPanel";
 
@@ -563,7 +563,7 @@ export function TraceabilityPage({
       { key: "records", label: "Registros", description: "Operações e simulações" },
       { key: "logs", label: "Logs de Acesso", description: "Acessos e ações por dia" },
       { key: "reports", label: "Relatórios", description: "Exportação técnica" },
-      { key: "charts", label: "Indicadores e Gráficos", description: "Análise estatística e rampa de vácuo" },
+      { key: "charts", label: "Dashboard", description: "" },
     ];
 
     return (
