@@ -2,87 +2,98 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 chcp 65001 > $null
 
-$Repo = Split-Path -Parent $PSScriptRoot
+# Descobre a pasta do projeto sem precisar escrever Kauã no código.
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Repo = Split-Path -Parent $ScriptDir
+
+Write-Host "Projeto detectado em: $Repo" -ForegroundColor Cyan
+
 $Backend = Join-Path $Repo "gateway_fisico\backend"
-$Ihm = Join-Path $Repo "ihm_operador\frontend"
+$IHM = Join-Path $Repo "ihm_operador\frontend"
 $Gerente = Join-Path $Repo "sistema_gerente\frontend"
-$PythonVenv = Join-Path $Backend ".venv_gateway\Scripts\python.exe"
+
+if (!(Test-Path $Backend)) {
+    throw "Backend nao encontrado: $Backend"
+}
+
+if (!(Test-Path $IHM)) {
+    throw "IHM nao encontrada: $IHM"
+}
+
+if (!(Test-Path $Gerente)) {
+    throw "Gerente nao encontrado: $Gerente"
+}
 
 function Stop-Port {
     param([int]$Port)
 
-    Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue |
-        Select-Object -ExpandProperty OwningProcess -Unique |
-        ForEach-Object {
-            Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue
-        }
+    $connections = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
+    foreach ($connection in $connections) {
+        try {
+            Stop-Process -Id $connection.OwningProcess -Force -ErrorAction SilentlyContinue
+        } catch {}
+    }
 }
 
-if (!(Test-Path $Backend)) { throw "Backend não encontrado: $Backend" }
-if (!(Test-Path $Ihm)) { throw "IHM não encontrada: $Ihm" }
-if (!(Test-Path $Gerente)) { throw "Sistema gerente não encontrado: $Gerente" }
-if (!(Test-Path $PythonVenv)) { throw "Ambiente virtual não encontrado: $PythonVenv" }
-
-Write-Host "Parando portas antigas..." -ForegroundColor Cyan
+Write-Host "Fechando portas antigas..." -ForegroundColor Cyan
 Stop-Port 8020
-Stop-Port 5178
 Stop-Port 5173
+Stop-Port 5178
 
-Write-Host "Abrindo Gateway/API na porta 8020..." -ForegroundColor Cyan
+Write-Host "Abrindo Gateway na porta 8020..." -ForegroundColor Cyan
 
-Start-Process powershell.exe -ArgumentList @(
+$GatewayPython = Join-Path $Backend ".venv_gateway\Scripts\python.exe"
+
+if (!(Test-Path $GatewayPython)) {
+    Write-Host "Ambiente Python do Gateway nao encontrado. Criando..." -ForegroundColor Yellow
+    Set-Location $Backend
+
+    py -m venv .venv_gateway 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        python -m venv .venv_gateway
+    }
+
+    .\.venv_gateway\Scripts\python.exe -m pip install --upgrade pip
+    .\.venv_gateway\Scripts\pip.exe install fastapi uvicorn pydantic python-multipart requests
+}
+
+Start-Process powershell -ArgumentList @(
     "-NoExit",
-    "-NoProfile",
     "-ExecutionPolicy", "Bypass",
     "-Command",
-    "cd `"$Backend`"; `"$PythonVenv`" -m uvicorn app.main:app --host 127.0.0.1 --port 8020 --reload"
+    "cd `"$Backend`"; .\.venv_gateway\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8020 --reload"
 )
 
-Start-Sleep -Seconds 10
-
-Write-Host "Testando Gateway/API..." -ForegroundColor Cyan
-Invoke-WebRequest "http://127.0.0.1:8020/api/state" -UseBasicParsing | Out-Null
-
-Write-Host "Abrindo IHM na porta 5178..." -ForegroundColor Cyan
-cd $Ihm
-npm install
-
-Start-Process powershell.exe -ArgumentList @(
-    "-NoExit",
-    "-NoProfile",
-    "-ExecutionPolicy", "Bypass",
-    "-Command",
-    "cd `"$Ihm`"; npm run dev -- --host 127.0.0.1 --port 5178"
-)
-
-Start-Sleep -Seconds 8
-
-Write-Host "Testando IHM..." -ForegroundColor Cyan
-Invoke-WebRequest "http://127.0.0.1:5178" -UseBasicParsing | Out-Null
+Start-Sleep -Seconds 3
 
 Write-Host "Abrindo Sistema Gerente na porta 5173..." -ForegroundColor Cyan
-cd $Gerente
-npm install
 
-Start-Process powershell.exe -ArgumentList @(
+Start-Process powershell -ArgumentList @(
     "-NoExit",
-    "-NoProfile",
     "-ExecutionPolicy", "Bypass",
     "-Command",
-    "cd `"$Gerente`"; npm run dev -- --host 127.0.0.1 --port 5173"
+    "cd `"$Gerente`"; if (!(Test-Path node_modules)) { npm install }; npm run dev -- --host 127.0.0.1 --port 5173"
 )
 
-Start-Sleep -Seconds 8
+Start-Sleep -Seconds 2
 
-Write-Host "Testando Sistema Gerente..." -ForegroundColor Cyan
-Invoke-WebRequest "http://127.0.0.1:5173" -UseBasicParsing | Out-Null
+Write-Host "Abrindo IHM na porta 5178..." -ForegroundColor Cyan
 
-Start-Process "http://127.0.0.1:8020/docs"
-Start-Process "http://127.0.0.1:5178"
-Start-Process "http://127.0.0.1:5173"
+Start-Process powershell -ArgumentList @(
+    "-NoExit",
+    "-ExecutionPolicy", "Bypass",
+    "-Command",
+    "cd `"$IHM`"; if (!(Test-Path node_modules)) { npm install }; npm run dev -- --host 127.0.0.1 --port 5178"
+)
+
+Start-Sleep -Seconds 5
 
 Write-Host ""
-Write-Host "Sistema TSEA aberto." -ForegroundColor Green
-Write-Host "Gateway/API: http://127.0.0.1:8020/docs" -ForegroundColor Green
-Write-Host "IHM: http://127.0.0.1:5178" -ForegroundColor Green
-Write-Host "Gerente: http://127.0.0.1:5173" -ForegroundColor Green
+Write-Host "Sistema iniciado." -ForegroundColor Green
+Write-Host "Gateway:          http://127.0.0.1:8020"
+Write-Host "Estado:           http://127.0.0.1:8020/api/state"
+Write-Host "Gerente:          http://127.0.0.1:5173"
+Write-Host "IHM:              http://127.0.0.1:5178"
+
+Start-Process "http://127.0.0.1:5173"
+Start-Process "http://127.0.0.1:5178"

@@ -6,13 +6,12 @@
     "tank_type": "Regulador",
     "estimated_seconds": 180,
     "max_cycle_seconds": 180,
-    "target_pressure_mbar": 8,
-    "roots_start_pressure_mbar": 50,
+    "target_pressure_mbar": 8.0,
+    "roots_start_pressure_mbar": 50.0,
     "b2_start_seconds": 24,
     "oil_start_seconds": 90,
     "stabilization_seconds": 150,
-    "oil_per_tank_l": 40,
-    "min_oil_flow_l_min": 1.5,
+    "oil_per_tank_l": 40.0,
     "note": "Receita base para demonstracao segura do prototipo fisico."
   },
   {
@@ -28,6 +27,21 @@
     "oil_start_seconds": 100,
     "stabilization_seconds": 110,
     "oil_per_tank_l": 60.0,
+    "note": ""
+  },
+  {
+    "id": "777",
+    "title": "Teste 3",
+    "name": "Teste 3",
+    "tank_type": "Grande",
+    "estimated_seconds": 120,
+    "max_cycle_seconds": 120,
+    "target_pressure_mbar": 2.0,
+    "roots_start_pressure_mbar": 6.0,
+    "b2_start_seconds": 60,
+    "oil_start_seconds": 100,
+    "stabilization_seconds": 110,
+    "oil_per_tank_l": 100.0,
     "note": ""
   }
 ]
